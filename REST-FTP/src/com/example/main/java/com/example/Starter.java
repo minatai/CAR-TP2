@@ -1,6 +1,4 @@
-package main.java.com.example;
-
-import main.java.com.example.config.AppConfig;
+package com.example.main.java.com.example;
 
 import org.apache.cxf.transport.servlet.CXFServlet;
 import org.eclipse.jetty.server.Server;
@@ -8,6 +6,8 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+
+import restFTP.config.AppConfig;
 
 public class Starter {
 	public static void main(final String[] args) throws Exception {

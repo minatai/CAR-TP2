@@ -1,4 +1,4 @@
-package main.java.com.example.model;
+package com.example.main.java.com.example.model;
 
 public class Person {
 	private String email;

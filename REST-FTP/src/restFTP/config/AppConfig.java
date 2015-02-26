@@ -1,15 +1,10 @@
-package main.java.com.example.config;
+package restFTP.config;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.ext.RuntimeDelegate;
-
-import main.java.car.HelloWorldResource;
-import main.java.com.example.rs.JaxRsApiApplication;
-import main.java.com.example.rs.PeopleRestService;
-import main.java.com.example.services.PeopleService;
 
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.endpoint.Server;
@@ -18,6 +13,11 @@ import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+
+import com.example.main.java.car.HelloWorldResource;
+import com.example.main.java.com.example.rs.JaxRsApiApplication;
+import com.example.main.java.com.example.rs.PeopleRestService;
+import com.example.main.java.com.example.services.PeopleService;
 
 @Configuration
 public class AppConfig {

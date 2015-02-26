@@ -1,4 +1,4 @@
-package main.java.com.example.rs;
+package restFTP.restService;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;

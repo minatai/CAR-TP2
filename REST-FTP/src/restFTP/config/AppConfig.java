@@ -34,7 +34,7 @@ public class AppConfig {
 						JAXRSServerFactoryBean.class);
 
 		final List<Object> serviceBeans = new ArrayList<Object>();
-		// serviceBeans.add(peopleRestService());
+		serviceBeans.add(peopleRestService());
 		serviceBeans.add(new HelloWorldResource());
 
 		factory.setServiceBeans(serviceBeans);

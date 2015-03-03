@@ -14,7 +14,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
-import com.example.main.java.car.HelloWorldResource;
+import restFTP.restService.FTPRestService;
+
 import com.example.main.java.com.example.rs.JaxRsApiApplication;
 import com.example.main.java.com.example.rs.PeopleRestService;
 import com.example.main.java.com.example.services.PeopleService;
@@ -35,7 +36,7 @@ public class AppConfig {
 
 		final List<Object> serviceBeans = new ArrayList<Object>();
 		serviceBeans.add(peopleRestService());
-		serviceBeans.add(new HelloWorldResource());
+		serviceBeans.add(new FTPRestService());
 
 		factory.setServiceBeans(serviceBeans);
 		factory.setAddress("/" + factory.getAddress());

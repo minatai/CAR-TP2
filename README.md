@@ -22,7 +22,7 @@ Todo:
 - [ ] POST rest/api/ftp/folder/{new_dir} -> crée un nouveau répertoire. Comment??? (arthur)
 - [ ] POST rest/api/ftp/file/{file} -> crée nouveau fichier dans le répertoire donné (arthur)
 
-- [ ] PUT rest/api/ftp/folder/{file} -> met à jour le répertoire. Utile??? (Imane)
+- [ ] PUT rest/api/ftp/folder/ -> met à jour le répertoire. Utile??? (Imane)
 - [ ] PUT rest/api/ftp/file/{file} -> met à jour le fichier dans le répertoire donné (Imane)
 
 - [ ] DELETE rest/api/ftp/folder/{name} -> supprime le répertoire (Imane)

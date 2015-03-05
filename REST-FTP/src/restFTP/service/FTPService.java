@@ -1,6 +1,7 @@
 package restFTP.service;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
@@ -119,8 +120,8 @@ public class FTPService {
 			this.ftpClient.changeWorkingDirectory(pathname);
 		} catch (final IOException e) {
 			System.out
-			.printf("[%s] I/O error occured while setting a new working directory.\n",
-					this.login);
+					.printf("[%s] I/O error occured while setting a new working directory.\n",
+							this.login);
 			e.printStackTrace();
 		}
 		if (result) {
@@ -158,6 +159,33 @@ public class FTPService {
 		return result;
 	}
 
+	/**
+	 * Create a new file.
+	 *
+	 * @param remote
+	 *            the name of the new file. If this file name contains a
+	 *            directory name, create the new file in.
+	 * @param local
+	 *            the InputStream of the new file
+	 * @return return true if the file is created. False otherwise. The file is
+	 *         not created, if the directory name does not exist.
+	 */
+	public boolean createFile(final String remote, final InputStream local) {
+		try {
+			if (this.ftpClient.storeFile(remote, local)) {
+				System.out.printf("[%s] New file %s created.\n", this.login,
+						remote);
+				return true;
+			}
+		} catch (final IOException e) {
+			System.out.printf("[%s] Error while creating a new file.\n",
+					this.login);
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	// Ne marche pas. Je ne sais pas pourquoi.
 	// /**
 	// * List the files of the directory given
 	// *
@@ -181,11 +209,4 @@ public class FTPService {
 	// }
 	// return result;
 	// }
-
-	public static void main(final String[] args) throws Exception {
-		final FTPService connector = new FTPService();
-		connector.connect();
-		connector.login("arctarus", "test");
-		System.out.println("login done");
-	}
 }

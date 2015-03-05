@@ -20,7 +20,7 @@ Todo:
 - [ ] GET rest/api/ftp/file/{name} -> retourne le fichier en utilisant le type mime application/octet-stream (Imane)
 
 - [*] POST rest/api/ftp/folder/{new_dir} -> crée un nouveau répertoire. (arthur)
-- [ ] POST rest/api/ftp/file/{file} -> crée nouveau fichier dans le répertoire donné (arthur)
+- [*] POST rest/api/ftp/file/{directory/file} -> crée nouveau fichier dans le répertoire donné (arthur)
 
 - [ ] PUT rest/api/ftp/folder/ -> met à jour le répertoire. Utile??? (Imane)
 - [ ] PUT rest/api/ftp/file/{file} -> met à jour le fichier dans le répertoire donné (Imane)

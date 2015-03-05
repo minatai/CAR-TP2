@@ -1,6 +1,5 @@
 package restFTP.main;
 
-import org.apache.commons.net.ftp.FTPClient;
 import org.apache.cxf.transport.servlet.CXFServlet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -14,7 +13,6 @@ public class Starter {
 
 	public final static String hostname = "localhost";
 	public final static int port = 9999;
-	private static FTPClient client = null;
 	public final static String userName = "arctarus";
 	public final static String password = "test";
 

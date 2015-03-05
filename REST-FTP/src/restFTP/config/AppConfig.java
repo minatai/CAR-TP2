@@ -35,7 +35,6 @@ public class AppConfig {
 						JAXRSServerFactoryBean.class);
 
 		final List<Object> serviceBeans = new ArrayList<Object>();
-		serviceBeans.add(peopleRestService());
 		serviceBeans.add(new FTPRestService());
 
 		factory.setServiceBeans(serviceBeans);

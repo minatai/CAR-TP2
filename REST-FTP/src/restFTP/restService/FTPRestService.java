@@ -10,6 +10,7 @@ import restFTP.main.Starter;
 import restFTP.service.FTPService;
 
 @Path("/ftp")
+// TODO ajouter des code de retours HTML partout ou c'était nécéssaire
 public class FTPRestService {
 
 	/**
@@ -83,5 +84,31 @@ public class FTPRestService {
 		} else {
 			return "Impossible to connect or log in";
 		}
+	}
+
+	/**
+	 * Create a new session on the FTP server
+	 *
+	 * @param login
+	 *            the login used for the authentication
+	 * @param password
+	 *            the password used for the authentication
+	 * @return a message representing the state of the
+	 */
+	@POST
+	@Path("/login/{username}/{password}")
+	// TODO retourner un cookie avec un ID de session
+	// TODO adapter méthode en fonction correction apporté à FTPService.login
+	public String login(@PathParam(value = "username") final String username,
+			@PathParam(value = "password") final String password) {
+		if (!FTPRestService.ftpService.connect()) {
+			return "impossible to connecte to the FTP server.";
+		}
+		if (FTPRestService.ftpService.login(username, password)) {
+			// TODO créer un cookie avec l'id de la connection ftp à chercher
+			// pour se connecter au serveur.
+			return "Welcome " + username;
+		}
+		return "Nope";
 	}
 }

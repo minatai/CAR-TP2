@@ -32,4 +32,6 @@ Todo:
 
 - [ ] Ajout d'un formulaire pour ajouter un fichier lors de l'affichage d'un répertoire
 
-- [ ] Authentification http (idée de basehttp://{user}:{password}@url)
+- [ ] Page de login. Utilisation d'un session ID pour récupérer la bonne session ftp.(arthur)
+- [ ] modifier le FTPService pour acceder un grand nombre de connection. (Utilisation de HashMap?)(arthur)
+- [ ] page de déconnexion.(arthur)

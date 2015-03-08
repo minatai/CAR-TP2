@@ -12,6 +12,8 @@ import org.apache.commons.net.ftp.FTPReply;
  * @author Arthur Dewarumez
  *
  */
+// TODO ajout d'une structure pour stocker un grand nombre de session (HashMap
+// (id/session))
 public class FTPService {
 
 	private final String hostName = "localhost";
@@ -120,8 +122,8 @@ public class FTPService {
 			this.ftpClient.changeWorkingDirectory(pathname);
 		} catch (final IOException e) {
 			System.out
-					.printf("[%s] I/O error occured while setting a new working directory.\n",
-							this.login);
+			.printf("[%s] I/O error occured while setting a new working directory.\n",
+					this.login);
 			e.printStackTrace();
 		}
 		if (result) {

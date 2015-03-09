@@ -10,6 +10,12 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import restFTP.config.AppConfig;
 
 public class Starter {
+
+	public final static String hostname = "localhost";
+	public final static int port = 9999;
+	public final static String userName = "arctarus";
+	public final static String password = "test";
+
 	public static void main(final String[] args) throws Exception {
 		final Server server = new Server(8080);
 

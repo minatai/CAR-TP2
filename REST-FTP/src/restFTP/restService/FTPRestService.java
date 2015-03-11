@@ -1,7 +1,9 @@
 package restFTP.restService;
 
 import java.io.InputStream;
+import java.util.List;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -111,32 +113,28 @@ public class FTPRestService {
 		}
 		return "Nope";
 	}
-
-/**
-	 * Create a new file.
+	/**
 	 *
-	 * @param remote
-	 *            the name of the new file. If this file name contains a
-	 *            directory name, create the new file in.
-	 * @param fileInStream
-	 *            the InputStream of the new file
-	 * @return a string to send to the client who represent the result of this
-	 *         operation
+	 *
 	 */
-	@POST
-	@Path("/file/{name: .*}")
-	public String createFile(@PathParam(value = "name") final String remote,
-			final InputStream fileInStream) {
+	@GET
+	@Path("/folder/{name}")
+	public String listDirectory(@PathParam(value = "name") final String dirName) {
 		System.out.println("*********************************************\n"
-				+ remote + "*********************************************\n");
+				+ dirName + "*********************************************\n");
 		if (this.connectAndLogin()) {
-			if (FTPRestService.ftpService.createFile(remote, fileInStream)) {
-				return "File created.";
-			} else {
-				return "The file is not created.";
+			final List<String> listContenu = this.ftpService
+					.listDirectory(dirName);
+			String liste = "";
+			System.out.println(liste);
+
+			for (final String s : listContenu) {
+				liste = liste + s + "\n";
 			}
+			return liste;
 		} else {
 			return "Impossible to connect or log in";
 		}
+
 	}
 }

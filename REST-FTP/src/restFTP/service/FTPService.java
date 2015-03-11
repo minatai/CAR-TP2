@@ -2,8 +2,11 @@ package restFTP.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
 /**
@@ -187,28 +190,27 @@ public class FTPService {
 		return false;
 	}
 
-	// Ne marche pas. Je ne sais pas pourquoi.
-	// /**
-	// * List the files of the directory given
-	// *
-	// * @param pathname
-	// * the directory to use
-	// * @return a list of filename for every files in the directory
-	// * @throws FTPConnectionClosedException
-	// */
-	// public List<String> listDirectory(final String pathname) {
-	// final List<String> result = new LinkedList<>();
-	// try {
-	// final FTPFile[] filenames = this.ftpClient.listFiles(pathname);
-	// for (int i = 0; i < filenames.length; i++) {
-	// System.out.println(filenames[i]);
-	// result.add(filenames[i].getName());
-	// }
-	// } catch (final IOException e) {
-	// System.out.printf("[%s] Error while listing files\n.", this.login);
-	// e.printStackTrace();
-	// result.add("Impossible to list files for the path " + pathname);
-	// }
-	// return result;
-	// }
+	/**
+	 * List the files of the directory given
+	 *
+	 * @param directory
+	 *            the directory to use
+	 * @return a list of filename for every files in the directory
+	 * @throws FTPConnectionClosedException
+	 */
+	public List<String> listDirectory(final String directory) {
+		final List<String> files = new ArrayList<String>();
+		try {
+			final FTPFile[] filenames = this.ftpClient.listFiles(directory);
+			for (int i = 0; i < filenames.length; i++) {
+				System.out.println(filenames[i].getName());
+				files.add(filenames[i].getName());
+			}
+		} catch (final IOException e) {
+			System.out
+			.println("Erreur: Impossible d'afficher la liste des fichiers");
+			e.printStackTrace();
+		}
+		return files;
+	}
 }

@@ -15,10 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
 import restFTP.restService.FTPRestService;
-
-import com.example.main.java.com.example.rs.JaxRsApiApplication;
-import com.example.main.java.com.example.rs.PeopleRestService;
-import com.example.main.java.com.example.services.PeopleService;
+import restFTP.restService.JaxRsApiApplication;
 
 @Configuration
 public class AppConfig {
@@ -46,16 +43,6 @@ public class AppConfig {
 	@Bean
 	public JaxRsApiApplication jaxRsApiApplication() {
 		return new JaxRsApiApplication();
-	}
-
-	@Bean
-	public PeopleRestService peopleRestService() {
-		return new PeopleRestService();
-	}
-
-	@Bean
-	public PeopleService peopleService() {
-		return new PeopleService();
 	}
 
 	@Bean

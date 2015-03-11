@@ -111,4 +111,32 @@ public class FTPRestService {
 		}
 		return "Nope";
 	}
+
+/**
+	 * Create a new file.
+	 *
+	 * @param remote
+	 *            the name of the new file. If this file name contains a
+	 *            directory name, create the new file in.
+	 * @param fileInStream
+	 *            the InputStream of the new file
+	 * @return a string to send to the client who represent the result of this
+	 *         operation
+	 */
+	@POST
+	@Path("/file/{name: .*}")
+	public String createFile(@PathParam(value = "name") final String remote,
+			final InputStream fileInStream) {
+		System.out.println("*********************************************\n"
+				+ remote + "*********************************************\n");
+		if (this.connectAndLogin()) {
+			if (FTPRestService.ftpService.createFile(remote, fileInStream)) {
+				return "File created.";
+			} else {
+				return "The file is not created.";
+			}
+		} else {
+			return "Impossible to connect or log in";
+		}
+	}
 }

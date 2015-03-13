@@ -7,6 +7,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.NewCookie;
+import javax.ws.rs.core.Response;
 
 import restFTP.main.Starter;
 import restFTP.service.FTPService;
@@ -95,24 +97,24 @@ public class FTPRestService {
 	 *            the login used for the authentication
 	 * @param password
 	 *            the password used for the authentication
-	 * @return a message representing the state of the
+	 * @return a response representing the state of the connection.
 	 */
 	@POST
 	@Path("/login/{username}/{password}")
 	// TODO retourner un cookie avec un ID de session
 	// TODO adapter méthode en fonction correction apporté à FTPService.login
-	public String login(@PathParam(value = "username") final String username,
+	public Response login(@PathParam(value = "username") final String username,
 			@PathParam(value = "password") final String password) {
 		if (!FTPRestService.ftpService.connect()) {
-			return "impossible to connecte to the FTP server.";
+			return Response.status(500).build();
 		}
 		if (FTPRestService.ftpService.login(username, password)) {
-			// TODO créer un cookie avec l'id de la connection ftp à chercher
-			// pour se connecter au serveur.
-			return "Welcome " + username;
+			final NewCookie cookie = new NewCookie("Session", "123456");
+			return Response.ok().cookie(cookie).build();
 		}
-		return "Nope";
+		return Response.status(401).build();
 	}
+
 	/**
 	 *
 	 *

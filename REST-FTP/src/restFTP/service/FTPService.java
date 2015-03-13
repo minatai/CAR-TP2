@@ -1,5 +1,6 @@
 package restFTP.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -198,19 +199,22 @@ public class FTPService {
 	 * @return a list of filename for every files in the directory
 	 * @throws FTPConnectionClosedException
 	 */
-	public List<String> listDirectory(final String directory) {
+	public List<String> listDirectory(final String dir) {
+		System.out.println("appel");
+
 		final List<String> files = new ArrayList<String>();
-		try {
-			final FTPFile[] filenames = this.ftpClient.listFiles(directory);
-			for (int i = 0; i < filenames.length; i++) {
-				System.out.println(filenames[i].getName());
-				files.add(filenames[i].getName());
-			}
-		} catch (final IOException e) {
-			System.out
-			.println("Erreur: Impossible d'afficher la liste des fichiers");
-			e.printStackTrace();
+		File directory = new File(dir);
+		System.out.println("on commence");
+		final File[] filenames = directory.listFiles();
+		System.out.println("affichage de fichier");
+		System.out.println(filenames.length);
+		for (int i = 0; i < filenames.length; i++) {
+			System.out.println(i);
+
+			System.out.println(filenames[i].getName());
+			files.add(filenames[i].getName());
 		}
+		System.out.println("fin");
 		return files;
 	}
 }

@@ -16,12 +16,12 @@ import restFTP.service.FTPService;
 public class FTPRestService {
 
 	/**
-	 * The tools used to connecte to the FTP server.
+	 * The tools used to connect to the FTP server.
 	 */
 	private static FTPService ftpService = FTPService.getInstance();
 
 	/**
-	 * If necessary, connect to the FTP server and log in with the credentiels
+	 * If necessary, connect to the FTP server and log in with the credentials
 	 * set in the class Started
 	 *
 	 * @return true if the sequence successfully completed. False otherwise.
@@ -121,16 +121,17 @@ public class FTPRestService {
 	@Path("/folder/{name}")
 	public String listDirectory(@PathParam(value = "name") final String dirName) {
 		System.out.println("*********************************************\n"
-				+ dirName + "*********************************************\n");
+				+ dirName + "**1234*******************************************\n");
 		if (this.connectAndLogin()) {
-			final List<String> listContenu = this.ftpService
+			//final List<String> listContenu = 
+					this.ftpService
 					.listDirectory(dirName);
 			String liste = "";
 			System.out.println(liste);
 
-			for (final String s : listContenu) {
-				liste = liste + s + "\n";
-			}
+			//for (final String s : listContenu) {
+				//liste = liste + s + "\n";
+			//}
 			return liste;
 		} else {
 			return "Impossible to connect or log in";

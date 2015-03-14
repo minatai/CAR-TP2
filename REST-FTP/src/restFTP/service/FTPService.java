@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPConnectionClosedException;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
@@ -125,8 +126,8 @@ public class FTPService {
 			this.ftpClient.changeWorkingDirectory(pathname);
 		} catch (final IOException e) {
 			System.out
-			.printf("[%s] I/O error occured while setting a new working directory.\n",
-					this.login);
+					.printf("[%s] I/O error occured while setting a new working directory.\n",
+							this.login);
 			e.printStackTrace();
 		}
 		if (result) {
@@ -191,7 +192,7 @@ public class FTPService {
 	}
 
 	/**
-	 * List the files of the directory given
+	 * List the files of the given directory
 	 *
 	 * @param directory
 	 *            the directory to use
@@ -208,9 +209,28 @@ public class FTPService {
 			}
 		} catch (final IOException e) {
 			System.out
-			.println("Erreur: Impossible d'afficher la liste des fichiers");
+					.println("Erreur: Impossible d'afficher la liste des fichiers");
 			e.printStackTrace();
 		}
 		return files;
+	}
+
+	/**
+	 * Delete the given file or directory.
+	 *
+	 * @param filename
+	 *            the file or directory name
+	 * @return true if the deletion is successfull. False, otherwise
+	 */
+	public boolean delete(final String filename) {
+		try {
+			return this.ftpClient.deleteFile(filename);
+		} catch (final IOException e) {
+			System.out.printf(
+					"Impossible de supprimer le fichier/répertoire %s.\n",
+					filename);
+			e.printStackTrace();
+			return false;
+		}
 	}
 }

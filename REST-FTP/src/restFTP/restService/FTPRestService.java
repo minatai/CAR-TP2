@@ -1,8 +1,8 @@
 package restFTP.restService;
 
 import java.io.InputStream;
-import java.util.List;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -14,7 +14,6 @@ import restFTP.main.Starter;
 import restFTP.service.FTPService;
 
 @Path("/ftp")
-// TODO ajouter des code de retours HTML partout ou c'était nécéssaire
 public class FTPRestService {
 
 	/**
@@ -125,18 +124,57 @@ public class FTPRestService {
 		System.out.println("*********************************************\n"
 				+ dirName + "*********************************************\n");
 		if (this.connectAndLogin()) {
-			final List<String> listContenu = this.ftpService
-					.listDirectory(dirName);
-			String liste = "";
-			System.out.println(liste);
-
-			for (final String s : listContenu) {
-				liste = liste + s + "\n";
-			}
-			return liste;
+			// final List<String> listContenu = this.ftpService
+			// .listDirectory(dirName);
+			this.ftpService.listDirectory(dirName);
+			// String liste = "";
+			// System.out.println(liste);
+			//
+			// for (final String s : listContenu) {
+			// liste = liste + s + "\n";
+			// }
+			// return liste;
+			return "";
 		} else {
 			return "Impossible to connect or log in";
 		}
 
+	}
+
+	/**
+	 * Delete the given directory.
+	 *
+	 * @param dirName
+	 *            the directory
+	 * @return True if the deletion is successful. False, if the directory
+	 *         contains some files or subdirectories, or it does not exists.
+	 */
+	@DELETE
+	@Path("/folder/{folder: .+}")
+	public String deleteDirectory(
+			@PathParam(value = "folder") final String dirName) {
+		if (this.connectAndLogin()) {
+			if (FTPRestService.ftpService.delete(dirName)) {
+				return "Deletion successfull";
+			} else {
+				return "Impossible to delete the given directory/file";
+			}
+		} else {
+			return "Impossible to connect or log in";
+		}
+	}
+
+	/**
+	 * Delete the given file.
+	 *
+	 * @param filename
+	 *            the file
+	 * @return True if the deletion is successful. False, if the does not
+	 *         exists.
+	 */
+	@DELETE
+	@Path("/file/{file: .+}")
+	public String deleteFile(@PathParam(value = "file") final String filename) {
+		return deleteDirectory(filename);
 	}
 }

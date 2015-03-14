@@ -26,8 +26,8 @@ Todo:
 - [ ] PUT rest/api/ftp/folder/ -> met à jour le répertoire. Utile??? (Imane)
 - [ ] PUT rest/api/ftp/file/{file} -> met à jour le fichier dans le répertoire donné (Imane)
 
-- [ ] DELETE rest/api/ftp/folder/{name} -> supprime le répertoire (Arthur)
-- [ ] DELETE rest/api/ftp/file/{name} -> supprime le fichier (Arthur)
+- [*] DELETE rest/api/ftp/folder/{name} -> supprime le répertoire (Arthur)
+- [*] DELETE rest/api/ftp/file/{name} -> supprime le fichier (Arthur)
 
 - [ ] Ajouter des liens pointant vers une ressource REST sur les résultats lors de l'affichage d'un répetoire
 

@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import restFTP.main.Starter;
 import restFTP.service.FTPService;
@@ -62,6 +63,7 @@ public class FTPRestService {
 	}
 
 	/**
+	 *
 	 * Create a new file.
 	 *
 	 * @param remote
@@ -151,17 +153,25 @@ public class FTPRestService {
 	 */
 	@DELETE
 	@Path("/folder/{folder: .+}")
-	public String deleteDirectory(
+	public Response deleteDirectory(
 			@PathParam(value = "folder") final String dirName) {
+		Response response = null;
 		if (this.connectAndLogin()) {
 			if (FTPRestService.ftpService.delete(dirName)) {
-				return "Deletion successfull";
+				System.out.println("Deletion successfull");
+				response = Response.ok().build();
 			} else {
-				return "Impossible to delete the given directory/file";
+				response = Response
+						.status(Status.FORBIDDEN)
+						.entity("Impossible to delete the given directory/file")
+						.build();
 			}
 		} else {
-			return "Impossible to connect or log in";
+			response = Response.status(Status.FORBIDDEN)
+					.entity("Impossible to delete the given directory/file")
+					.build();
 		}
+		return response;
 	}
 
 	/**
@@ -174,7 +184,7 @@ public class FTPRestService {
 	 */
 	@DELETE
 	@Path("/file/{file: .+}")
-	public String deleteFile(@PathParam(value = "file") final String filename) {
+	public Response deleteFile(@PathParam(value = "file") final String filename) {
 		return deleteDirectory(filename);
 	}
 }

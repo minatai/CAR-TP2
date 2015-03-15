@@ -18,7 +18,7 @@ import restFTP.service.FTPService;
 public class FTPRestService {
 
 	/**
-	 * The tools used to connecte to the FTP server.
+	 * The tools used to connect to the FTP server.
 	 */
 	private static FTPService ftpService = FTPService.getInstance();
 

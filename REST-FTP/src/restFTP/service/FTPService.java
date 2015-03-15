@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPFileFilter;
+import org.apache.commons.net.ftp.FTPFileFilters;
 import org.apache.commons.net.ftp.FTPReply;
 
 /**
@@ -192,29 +194,23 @@ public class FTPService {
 	}
 
 	/**
-	 * List the files of the directory given
+	 * List the files of the path given
 	 *
-	 * @param directory
-	 *            the directory to use
+	 * @param path
+	 *            the path to use
 	 * @return a list of filename for every files in the directory
 	 * @throws FTPConnectionClosedException
 	 */
-	public List<String> listDirectory(final String dir) {
-		System.out.println("appel");
+	public byte[] listDirectory(final String path) throws IOException {
+		 System.out.println(path);
+		 /* List the directory ! */
+			   FTPFile[] files = this.ftpClient.listFiles(path);
+			   String output = "";
+			   for (FTPFile file : files) {
+				   output += file.getName()+"\n";
+			   }
+			   return output.getBytes();	
 
-		final List<String> files = new ArrayList<String>();
-		File directory = new File(dir);
-		System.out.println("on commence");
-		final File[] filenames = directory.listFiles();
-		System.out.println("affichage de fichier");
-		System.out.println(filenames.length);
-		for (int i = 0; i < filenames.length; i++) {
-			System.out.println(i);
-
-			System.out.println(filenames[i].getName());
-			files.add(filenames[i].getName());
-		}
-		System.out.println("fin");
-		return files;
+		
 	}
 }

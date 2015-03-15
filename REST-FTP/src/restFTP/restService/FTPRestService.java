@@ -1,5 +1,6 @@
 package restFTP.restService;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -116,12 +117,13 @@ public class FTPRestService {
 	}
 
 	/**
+	 * @throws IOException 
 	 *
 	 *
 	 */
 	@GET
 	@Path("/folder/{name}")
-	public String listDirectory(@PathParam(value = "name") final String dirName) {
+	public String listDirectory(@PathParam(value = "name") final String dirName) throws IOException {
 		System.out.println("*********************************************\n"
 				+ dirName + "**1234*******************************************\n");
 		if (this.connectAndLogin()) {
@@ -140,4 +142,6 @@ public class FTPRestService {
 		}
 
 	}
+	
+	
 }

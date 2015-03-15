@@ -10,7 +10,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 public abstract class BaseTesting {
 
-	protected final String host = "localhost";
+	protected final String host = "http://localhost";
 	protected final int port = 8080;
 	protected final String APIBaseURL = "/rest/api/ftp/";
 	protected final String completeURL = this.host + ":" + this.port
@@ -30,9 +30,15 @@ public abstract class BaseTesting {
 
 	public HttpResponse createDirectory(final String dirName)
 			throws ClientProtocolException, IOException {
-		System.out.println(this.completeURL + this.folderRessource + dirName);
 		final HttpPost request = new HttpPost(this.completeURL
 				+ this.folderRessource + dirName);
+		return this.client.execute(request);
+	}
+
+	public HttpResponse createFile(final String filename)
+			throws ClientProtocolException, IOException {
+		final HttpPost request = new HttpPost(this.completeURL
+				+ this.fileRessource + filename);
 		return this.client.execute(request);
 	}
 

@@ -50,15 +50,17 @@ public class FTPRestService {
 	 */
 	@POST
 	@Path("/folder/{name}")
-	public String createDirectory(
+	public Response createDirectory(
 			@PathParam(value = "name") final String dirName) {
 		if (this.connectAndLogin()) {
 			if (FTPRestService.ftpService.createDirectory(dirName)) {
-				return "Directory " + dirName + " created.";
+				return Response.ok().build();
 			}
-			return "Can not create directory";
+			return Response.status(Status.FORBIDDEN)
+					.entity("The file is not created.").build();
 		} else {
-			return "Impossible to connect or log in";
+			return Response.status(Status.UNAUTHORIZED)
+					.entity("Impossible to connect or log in").build();
 		}
 	}
 
@@ -76,18 +78,20 @@ public class FTPRestService {
 	 */
 	@POST
 	@Path("/file/{name: .*}")
-	public String createFile(@PathParam(value = "name") final String remote,
+	public Response createFile(@PathParam(value = "name") final String remote,
 			final InputStream fileInStream) {
 		System.out.println("*********************************************\n"
 				+ remote + "*********************************************\n");
 		if (this.connectAndLogin()) {
 			if (FTPRestService.ftpService.createFile(remote, fileInStream)) {
-				return "File created.";
+				return Response.ok().build();
 			} else {
-				return "The file is not created.";
+				return Response.status(Status.FORBIDDEN)
+						.entity("The file is not created.").build();
 			}
 		} else {
-			return "Impossible to connect or log in";
+			return Response.status(Status.UNAUTHORIZED)
+					.entity("Impossible to connect or log in").build();
 		}
 	}
 

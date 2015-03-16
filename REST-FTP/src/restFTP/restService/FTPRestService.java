@@ -125,7 +125,7 @@ public class FTPRestService {
 	@Path("/folder/{name}")
 	public String listDirectory(@PathParam(value = "name") final String dirName) throws IOException {
 		System.out.println("*********************************************\n"
-				+ dirName + "**1234*******************************************\n");
+				+ dirName + "*********************************************\n");
 		if (this.connectAndLogin()) {
 			//final List<String> listContenu = 
 					this.ftpService

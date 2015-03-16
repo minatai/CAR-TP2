@@ -22,6 +22,11 @@ import org.apache.commons.net.ftp.FTPReply;
 // (id/session))
 public class FTPService {
 
+	private static final String PARENT_LINK = "<a href=\"http://localhost:8080/rest/api/dir/p\"/>..</a></br>";
+	private static final String HERE = "here";
+	private static final String STOR_FORM = "</br><a href=\"http://localhost:8080/rest/api/formStor\"> Add </a>";
+	private static final String FILE_PATH_LINK = "<a href=\"http://localhost:8080/rest/api/file/";
+	private static final String DIR_PATH_LINK = "<a href=\"http://localhost:8080/rest/api/dir/";
 	private final String hostName = "localhost";
 	private final int port = 9999;
 	private final FTPClient ftpClient;
@@ -194,23 +199,37 @@ public class FTPService {
 	}
 
 	/**
-	 * List the files of the path given
+	 * List the files of the directory given
 	 *
-	 * @param path
-	 *            the path to use
+	 * @param directory
+	 *            the directory to use
 	 * @return a list of filename for every files in the directory
 	 * @throws FTPConnectionClosedException
 	 */
-	public byte[] listDirectory(final String path) throws IOException {
-		 System.out.println(path);
-		 /* List the directory ! */
-			   FTPFile[] files = this.ftpClient.listFiles(path);
-			   String output = "";
-			   for (FTPFile file : files) {
-				   output += file.getName()+"\n";
-			   }
-			   return output.getBytes();	
-
+	public String listDirectory(final String dir) {
 		
+		try {
+			System.out.println(this.ftpClient.printWorkingDirectory()+ "/"
+					+ dir);
+			String directory = this.ftpClient.printWorkingDirectory()+ "/"
+					+ dir;
+			this.ftpClient.changeWorkingDirectory(directory);
+			System.out. println("appel");
+			System.out.println("on commence");
+			FTPFile[] filenames;
+			filenames = this.ftpClient.listFiles(dir);
+			System.out.println("affichage de fichier");
+			System.out.println(filenames.length);
+			for (int i = 0; i < filenames.length; i++) {
+				System.out.println(i);
+
+				System.out.println(filenames[i].getName());
+			}
+			System.out.println("fin");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return "";
 	}
 }

@@ -27,12 +27,7 @@ import org.apache.commons.net.ftp.FTPReply;
 // TODO ajout d'une structure pour stocker un grand nombre de session (HashMap
 // (id/session))
 public class FTPService {
-
-	private static final String PARENT_LINK = "<a href=\"http://localhost:8080/rest/api/dir/p\"/>..</a></br>";
-	private static final String HERE = "here";
-	private static final String STOR_FORM = "</br><a href=\"http://localhost:8080/rest/api/formStor\"> Add </a>";
-	private static final String FILE_PATH_LINK = "<a href=\"http://localhost:8080/rest/api/file/";
-	private static final String DIR_PATH_LINK = "<a href=\"http://localhost:8080/rest/api/dir/";
+	
 	private final String hostName = "localhost";
 	private final int port = 9999;
 	private final FTPClient ftpClient;
@@ -45,22 +40,16 @@ public class FTPService {
 		}
 		return FTPService.instance;
 	}
-
-	// /**
-	// * Create a new FTPConnector to the specify address and port
-	// *
-	// * @param address
-	// * the address of the FTP server
-	// * @param port
-	// * the port on which the server listen.
-	// */
-	// public FTPService(final String hostName, final int port) {
-	// this.hostName = hostName;
-	// this.port = port;
-	// this.ftpClient = new FTPClient();
-	// this.login = null;
-	// }
-
+	/** if entry is a directory then return true
+	 * else return false
+	 * @param entry
+	 * @return 
+	 */
+	public boolean isADirectory(String entry) {
+		return new File(entry).isDirectory();
+		}
+	
+	
 	private FTPService() {
 		this.ftpClient = new FTPClient();
 		this.login = null;
@@ -212,12 +201,9 @@ public class FTPService {
 	 * @return a list of filename for every files in the directory
 	 * @throws FTPConnectionClosedException
 	 */
-	public String listDirectory(final String dir) {
+	public Response listDirectory(final String dir) {
 		
 		try {
-			String directory = this.ftpClient.printWorkingDirectory() + dir;
-			this.ftpClient.changeWorkingDirectory(directory);
-			System.out.println(directory);
 			
 			FTPFile[] filenames;
 			filenames = this.ftpClient.listFiles();
@@ -231,16 +217,20 @@ public class FTPService {
 			e.printStackTrace();
 		}
 		
-		return "";
+		return null;
 	}
-/** Get the date of file
- * 
- * @param
- * @return
- */
+
+	/** Get the containent of file
+	 * 
+	 * @param
+	 * @return
+	 */
 	public Response getFile(String filename){
 		Response response = null;
-				
+		if(isADirectory(filename)){
+			response = this.listDirectory(filename);
+		}
+		else{
 		try {
 			InputStream is;
 			is = this.ftpClient.retrieveFileStream(filename);
@@ -252,8 +242,9 @@ public class FTPService {
 				}
 				
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
+		}
 		}
 		return response;
 		

@@ -1,7 +1,7 @@
 package restFTP.restService;
 
-import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -126,15 +126,21 @@ public class FTPRestService {
 			@PathParam(value = "name") final String dirName,
 			@HeaderParam("Authorization") final String authorization) {
 		if (this.connectAndLogin(authorization)) {
-		
-			FTPRestService.ftpService.listDirectory(dirName);
-			 return Response.ok().build();
+
+			final List<String> res = FTPRestService.ftpService
+					.listDirectory(dirName);
+			String listing = "";
+			for (final String file : res) {
+				listing += file + "\n";
+			}
+			return Response.ok().entity(listing).build();
 		} else {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity("Impossible to connect or log in").build();
 		}
 
 	}
+
 	private Response delete(final String name, final String authorization) {
 		Response response = null;
 		if (this.connectAndLogin(authorization)) {
@@ -190,6 +196,5 @@ public class FTPRestService {
 			@HeaderParam("Authorization") final String authorization) {
 		return delete(filename, authorization);
 	}
-	
-	
+
 }

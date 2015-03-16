@@ -1,21 +1,17 @@
 package restFTP.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import java.util.logging.Logger;
-
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPConnectionClosedException;
 import org.apache.commons.net.ftp.FTPFile;
-import org.apache.commons.net.ftp.FTPFileFilter;
-import org.apache.commons.net.ftp.FTPFileFilters;
 import org.apache.commons.net.ftp.FTPReply;
 
 /**
@@ -46,23 +42,11 @@ public class FTPService {
 		return FTPService.instance;
 	}
 
-	// /**
-	// * Create a new FTPConnector to the specify address and port
-	// *
-	// * @param address
-	// * the address of the FTP server
-	// * @param port
-	// * the port on which the server listen.
-	// */
-	// public FTPService(final String hostName, final int port) {
-	// this.hostName = hostName;
-	// this.port = port;
-	// this.ftpClient = new FTPClient();
-	// this.login = null;
-	// }
-
 	private FTPService() {
 		this.ftpClient = new FTPClient();
+		final FTPClientConfig ftpConf = new FTPClientConfig(
+				FTPClientConfig.SYST_UNIX);
+		this.ftpClient.configure(ftpConf);
 		this.login = null;
 	}
 
@@ -139,8 +123,8 @@ public class FTPService {
 			this.ftpClient.changeWorkingDirectory(pathname);
 		} catch (final IOException e) {
 			System.out
-					.printf("[%s] I/O error occured while setting a new working directory.\n",
-							this.login);
+			.printf("[%s] I/O error occured while setting a new working directory.\n",
+					this.login);
 			e.printStackTrace();
 		}
 		if (result) {
@@ -212,54 +196,58 @@ public class FTPService {
 	 * @return a list of filename for every files in the directory
 	 * @throws FTPConnectionClosedException
 	 */
-	public String listDirectory(final String dir) {
-		
+	public List<String> listDirectory(final String dir) {
+		final List<String> result = new LinkedList<>();
 		try {
-			String directory = this.ftpClient.printWorkingDirectory() + dir;
-			this.ftpClient.changeWorkingDirectory(directory);
-			System.out.println(directory);
-			
+			// final String directory = this.ftpClient.printWorkingDirectory()
+			// + dir;
+			// this.ftpClient.changeWorkingDirectory(directory);
+			// System.out.println(directory);
+
 			FTPFile[] filenames;
-			filenames = this.ftpClient.listFiles();
-			System.out.println(filenames.length);
+			filenames = this.ftpClient.listFiles(dir);
 			for (int i = 0; i < filenames.length; i++) {
 				System.out.println(filenames[i].getName());
+				result.add(filenames[i].getName() + " "
+						+ filenames[i].getSize());
 			}
+
 		} catch (final IOException e) {
 			System.out
-					.println("Erreur: Impossible d'afficher la liste des fichiers");
+			.println("Erreur: Impossible d'afficher la liste des fichiers");
+			result.add("Erreur: Impossible d'afficher la liste des fichiers");
 			e.printStackTrace();
 		}
-		
-		return "";
+		return result;
 	}
-/** Get the date of file
- * 
- * @param
- * @return
- */
-	public Response getFile(String filename){
+
+	/**
+	 * Get the date of file
+	 *
+	 * @param
+	 * @return
+	 */
+	public Response getFile(final String filename) {
 		Response response = null;
-				
+
 		try {
 			InputStream is;
 			is = this.ftpClient.retrieveFileStream(filename);
 			if (is == null) {
 				response = Response.status(Response.Status.NOT_FOUND).build();
-				} else {
+			} else {
 				response = Response.ok(is, MediaType.APPLICATION_OCTET_STREAM)
-				.build();
-				}
-				
-		} catch (IOException e) {
+						.build();
+			}
+
+		} catch (final IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return response;
-		
-		
+
 	}
-	
+
 	/**
 	 * Delete the given file or directory.
 	 *

@@ -4,16 +4,23 @@ import java.io.InputStream;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import restFTP.main.Starter;
+import org.apache.commons.net.util.Base64;
+
 import restFTP.service.FTPService;
 
+/**
+ * This class handle every thing related with the ftp API.
+ *
+ * @author arctarus
+ *
+ */
 @Path("/ftp")
 public class FTPRestService {
 
@@ -26,13 +33,21 @@ public class FTPRestService {
 	 * If necessary, connect to the FTP server and log in with the credentiels
 	 * set in the class Started
 	 *
+	 * @param authorization
+	 *            the content of the HTTP header authorization
 	 * @return true if the sequence successfully completed. False otherwise.
 	 */
-	private boolean connectAndLogin() {
+	private boolean connectAndLogin(final String authorization) {
+		if (authorization == null) {
+			return false;
+		}
+		final String base64 = authorization.replace("Basic ", "");
+		final String decoded = new String(Base64.decodeBase64(base64));
+
+		final String auth[] = decoded.split(":");
 		if (!FTPRestService.ftpService.isConnected()) {
 			if (FTPRestService.ftpService.connect()) {
-				return FTPRestService.ftpService.login(Starter.userName,
-						Starter.password);
+				return FTPRestService.ftpService.login(auth[0], auth[1]);
 			}
 			return false;
 		} else {
@@ -45,14 +60,18 @@ public class FTPRestService {
 	 *
 	 * @param dirName
 	 *            the name of the directory to create
+	 * @param authorization
+	 *            the content of the HTTP header authorization
 	 * @return a string to send to the client who represent the result of this
 	 *         operation
 	 */
 	@POST
 	@Path("/folder/{name}")
 	public Response createDirectory(
-			@PathParam(value = "name") final String dirName) {
-		if (this.connectAndLogin()) {
+			@PathParam(value = "name") final String dirName,
+			@HeaderParam("Authorization") final String authorization) {
+		System.out.println("Header authorizaion " + authorization);
+		if (this.connectAndLogin(authorization)) {
 			if (FTPRestService.ftpService.createDirectory(dirName)) {
 				return Response.ok().build();
 			}
@@ -73,63 +92,39 @@ public class FTPRestService {
 	 *            directory name, create the new file in.
 	 * @param fileInStream
 	 *            the InputStream of the new file
+	 * @param authorization
+	 *            the content of the HTTP header authorization
 	 * @return a string to send to the client who represent the result of this
 	 *         operation
 	 */
 	@POST
 	@Path("/file/{name: .*}")
 	public Response createFile(@PathParam(value = "name") final String remote,
-			final InputStream fileInStream) {
-		System.out.println("*********************************************\n"
-				+ remote + "*********************************************\n");
-		if (this.connectAndLogin()) {
+			final InputStream fileInStream,
+			@HeaderParam("Authorization") final String authorization) {
+		if (this.connectAndLogin(authorization)) {
 			if (FTPRestService.ftpService.createFile(remote, fileInStream)) {
 				return Response.ok().build();
 			} else {
 				return Response.status(Status.FORBIDDEN)
 						.entity("The file is not created.").build();
 			}
-		} else {
-			return Response.status(Status.UNAUTHORIZED)
-					.entity("Impossible to connect or log in").build();
 		}
-	}
-
-	/**
-	 * Create a new session on the FTP server
-	 *
-	 * @param login
-	 *            the login used for the authentication
-	 * @param password
-	 *            the password used for the authentication
-	 * @return a response representing the state of the connection.
-	 */
-	@POST
-	@Path("/login/{username}/{password}")
-	// TODO retourner un cookie avec un ID de session
-	// TODO adapter méthode en fonction correction apporté à FTPService.login
-	public Response login(@PathParam(value = "username") final String username,
-			@PathParam(value = "password") final String password) {
-		if (!FTPRestService.ftpService.connect()) {
-			return Response.status(500).build();
-		}
-		if (FTPRestService.ftpService.login(username, password)) {
-			final NewCookie cookie = new NewCookie("Session", "123456");
-			return Response.ok().cookie(cookie).build();
-		}
-		return Response.status(401).build();
+		return Response.status(Status.UNAUTHORIZED)
+				.entity("Impossible to connect or log in").build();
 	}
 
 	/**
 	 *
-	 *
+	 * @param authorization
+	 *            the content of the HTTP header authorization
 	 */
 	@GET
 	@Path("/folder/{name}")
-	public String listDirectory(@PathParam(value = "name") final String dirName) {
-		System.out.println("*********************************************\n"
-				+ dirName + "*********************************************\n");
-		if (this.connectAndLogin()) {
+	public String listDirectory(
+			@PathParam(value = "name") final String dirName,
+			@HeaderParam("Authorization") final String authorization) {
+		if (this.connectAndLogin(authorization)) {
 			// final List<String> listContenu = this.ftpService
 			// .listDirectory(dirName);
 			this.ftpService.listDirectory(dirName);
@@ -148,20 +143,18 @@ public class FTPRestService {
 	}
 
 	/**
-	 * Delete the given directory.
+	 * Delete a file/directory
 	 *
-	 * @param dirName
-	 *            the directory
-	 * @return True if the deletion is successful. False, if the directory
-	 *         contains some files or subdirectories, or it does not exists.
+	 * @param name
+	 *            the name of the file/directory
+	 * @param authorization
+	 *            the content of the HTPP header authorization
+	 * @return a Response to send.
 	 */
-	@DELETE
-	@Path("/folder/{folder: .+}")
-	public Response deleteDirectory(
-			@PathParam(value = "folder") final String dirName) {
+	private Response delete(final String name, final String authorization) {
 		Response response = null;
-		if (this.connectAndLogin()) {
-			if (FTPRestService.ftpService.delete(dirName)) {
+		if (this.connectAndLogin(authorization)) {
+			if (FTPRestService.ftpService.delete(name)) {
 				System.out.println("Deletion successfull");
 				response = Response.ok().build();
 			} else {
@@ -179,16 +172,38 @@ public class FTPRestService {
 	}
 
 	/**
+	 * Delete the given directory.
+	 *
+	 * @param dirName
+	 *            the directory
+	 * @param authorization
+	 *            the content of the HTTP header authorization
+	 * @return True if the deletion is successful. False, if the directory
+	 *         contains some files or subdirectories, or it does not exists.
+	 */
+	@DELETE
+	@Path("/folder/{folder: .+}")
+	public Response deleteDirectory(
+			@PathParam(value = "folder") final String dirName,
+			@HeaderParam("Authorization") final String authorization) {
+		return this.delete(dirName, authorization);
+	}
+
+	/**
 	 * Delete the given file.
 	 *
 	 * @param filename
 	 *            the file
+	 * @param authorization
+	 *            the content of the HTTP header authorization
 	 * @return True if the deletion is successful. False, if the does not
 	 *         exists.
 	 */
 	@DELETE
 	@Path("/file/{file: .+}")
-	public Response deleteFile(@PathParam(value = "file") final String filename) {
-		return deleteDirectory(filename);
+	public Response deleteFile(
+			@PathParam(value = "file") final String filename,
+			@HeaderParam("Authorization") final String authorization) {
+		return delete(filename, authorization);
 	}
 }

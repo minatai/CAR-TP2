@@ -3,19 +3,14 @@ package restFTP.service;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import java.util.logging.Logger;
-
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPConnectionClosedException;
 import org.apache.commons.net.ftp.FTPFile;
-import org.apache.commons.net.ftp.FTPFileFilter;
-import org.apache.commons.net.ftp.FTPFileFilters;
 import org.apache.commons.net.ftp.FTPReply;
 
 /**
@@ -27,7 +22,7 @@ import org.apache.commons.net.ftp.FTPReply;
 // TODO ajout d'une structure pour stocker un grand nombre de session (HashMap
 // (id/session))
 public class FTPService {
-	
+
 	private final String hostName = "localhost";
 	private final int port = 9999;
 	private final FTPClient ftpClient;
@@ -40,18 +35,22 @@ public class FTPService {
 		}
 		return FTPService.instance;
 	}
-	/** if entry is a directory then return true
-	 * else return false
+
+	/**
+	 * if entry is a directory then return true else return false
+	 *
 	 * @param entry
-	 * @return 
+	 * @return
 	 */
-	public boolean isADirectory(String entry) {
+	public boolean isADirectory(final String entry) {
 		return new File(entry).isDirectory();
-		}
-	
-	
+	}
+
 	private FTPService() {
 		this.ftpClient = new FTPClient();
+		final FTPClientConfig ftpConf = new FTPClientConfig(
+				FTPClientConfig.SYST_UNIX);
+		this.ftpClient.configure(ftpConf);
 		this.login = null;
 	}
 
@@ -198,64 +197,60 @@ public class FTPService {
 	 *
 	 * @param directory
 	 *            the directory to use
-	 * @return a list of filename for every files in the directory
+	 * @return an array of FTPFile. An empty if they are no file or directory.
+	 *         null, if an error occurred.
 	 * @throws FTPConnectionClosedException
 	 */
-	public Response listDirectory(final String dir) {
-		Response response = null;
+
+	public FTPFile[] listDirectory(final String dir) {
 		try {
-			
-			FTPFile[] filenames;
-			filenames = this.ftpClient.listFiles();
-			String test=null;
-			response= Response.ok(test, MediaType.TEXT_HTML).build();
-		
+			return this.ftpClient.listFiles(dir);
 		} catch (final IOException e) {
-			response= Response.status(Response.Status.BAD_REQUEST).build();
+			System.out
+			.println("Erreur: Impossible d'afficher la liste des fichiers");
 			e.printStackTrace();
+			return null;
 		}
-		
-		return response;
+
 	}
 
-	/** Get the containent of file
-	 * 
+	/**
+	 * Get the containent of file
+	 *
 	 * @param
 	 * @return
 	 */
-	public Response getFile(String filename){
+	public Response getFile(final String filename) {
 		Response response = null;
-		if(isADirectory(filename)){
-			response = this.listDirectory(filename);
-		}
-		else{
-		try {
-			InputStream is;
-			is = this.ftpClient.retrieveFileStream(filename);
-			if (is == null) {
-				response = Response.status(Response.Status.NOT_FOUND).build();
+		if (isADirectory(filename)) {
+			response = Response.status(Response.Status.FORBIDDEN)
+					.entity("Le fichier est un répertoire").build();
+		} else {
+			try {
+				InputStream is;
+				is = this.ftpClient.retrieveFileStream(filename);
+				if (is == null) {
+					response = Response.status(Response.Status.NOT_FOUND)
+							.build();
 				} else {
-				response = Response.ok(is, MediaType.APPLICATION_OCTET_STREAM)
-				.build();
+					response = Response.ok(is,
+							MediaType.APPLICATION_OCTET_STREAM).build();
 				}
-				
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		}
+
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
 		}
 		return response;
-		
-		
 	}
+
 	
 	public Response putFile(String fileName){
 		return null;
 		
 		
 	}
-	
-	
+
 	/**
 	 * Delete the given file or directory.
 	 *

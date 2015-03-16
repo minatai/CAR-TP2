@@ -1,5 +1,6 @@
 package restFTP.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -22,11 +23,6 @@ import org.apache.commons.net.ftp.FTPReply;
 // (id/session))
 public class FTPService {
 
-	private static final String PARENT_LINK = "<a href=\"http://localhost:8080/rest/api/dir/p\"/>..</a></br>";
-	private static final String HERE = "here";
-	private static final String STOR_FORM = "</br><a href=\"http://localhost:8080/rest/api/formStor\"> Add </a>";
-	private static final String FILE_PATH_LINK = "<a href=\"http://localhost:8080/rest/api/file/";
-	private static final String DIR_PATH_LINK = "<a href=\"http://localhost:8080/rest/api/dir/";
 	private final String hostName = "localhost";
 	private final int port = 9999;
 	private final FTPClient ftpClient;
@@ -38,6 +34,16 @@ public class FTPService {
 			FTPService.instance = new FTPService();
 		}
 		return FTPService.instance;
+	}
+
+	/**
+	 * if entry is a directory then return true else return false
+	 *
+	 * @param entry
+	 * @return
+	 */
+	public boolean isADirectory(final String entry) {
+		return new File(entry).isDirectory();
 	}
 
 	private FTPService() {
@@ -121,8 +127,8 @@ public class FTPService {
 			this.ftpClient.changeWorkingDirectory(pathname);
 		} catch (final IOException e) {
 			System.out
-			.printf("[%s] I/O error occured while setting a new working directory.\n",
-					this.login);
+					.printf("[%s] I/O error occured while setting a new working directory.\n",
+							this.login);
 			e.printStackTrace();
 		}
 		if (result) {
@@ -207,30 +213,33 @@ public class FTPService {
 	}
 
 	/**
-	 * Get the date of file
+	 * Get the containent of file
 	 *
 	 * @param
 	 * @return
 	 */
 	public Response getFile(final String filename) {
 		Response response = null;
+		if (isADirectory(filename)) {
+			response = Response.status(Response.Status.FORBIDDEN)
+					.entity("Le fichier est un répertoire").build();
+		} else {
+			try {
+				InputStream is;
+				is = this.ftpClient.retrieveFileStream(filename);
+				if (is == null) {
+					response = Response.status(Response.Status.NOT_FOUND)
+							.build();
+				} else {
+					response = Response.ok(is,
+							MediaType.APPLICATION_OCTET_STREAM).build();
+				}
 
-		try {
-			InputStream is;
-			is = this.ftpClient.retrieveFileStream(filename);
-			if (is == null) {
-				response = Response.status(Response.Status.NOT_FOUND).build();
-			} else {
-				response = Response.ok(is, MediaType.APPLICATION_OCTET_STREAM)
-						.build();
+			} catch (final IOException e) {
+				e.printStackTrace();
 			}
-
-		} catch (final IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		return response;
-
 	}
 
 	/**

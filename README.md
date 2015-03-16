@@ -18,7 +18,7 @@ Todo:
 - [ ] Retourner des code d'erreur HTTP pour toutes les méthode de l'interface REST.
 - [ ] Trouver une méthode pour afficher le répertoire courant sans ajouter string particulière dans la requête.
 - [ ] GET rest/api/ftp/folder/{name} -> affiche la liste des fichiers du répertoire. (Imane)
-- [ ] GET rest/api/ftp/file/{name} -> retourne le fichier en utilisant le type mime application/octet-stream (Imane)
+- [*] GET rest/api/ftp/file/{name} -> retourne le fichier en utilisant le type mime application/octet-stream (Imane)
 
 - [*] POST rest/api/ftp/folder/{new_dir} -> crée un nouveau répertoire. (arthur)
 - [*] POST rest/api/ftp/file/{directory/file} -> crée nouveau fichier dans le répertoire donné (arthur)

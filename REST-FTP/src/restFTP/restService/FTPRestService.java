@@ -121,7 +121,7 @@ public class FTPRestService {
 	 *            the content of the HTTP header authorization
 	 */
 	@GET
-	@Path("/folder/{name: .*}")
+	@Path("/folder/{name: .+}")
 	public Response listDirectory(
 			@PathParam(value = "name") final String dirName,
 			@HeaderParam("Authorization") final String authorization) {
@@ -142,6 +142,33 @@ public class FTPRestService {
 
 	}
 
+	/**
+	 *
+	 * @param fileName
+	 * @param authorization
+	 * @return
+	 */
+	@GET
+	@Path("/file/{name: .+}")
+	public Response getFile(@PathParam(value = "name") final String fileName,
+			@HeaderParam("Authorization") final String authorization) {
+
+		if (this.connectAndLogin(authorization)) {
+
+			return FTPRestService.ftpService.getFile(fileName);
+		} else {
+			return Response.status(Status.UNAUTHORIZED)
+					.entity("Impossible to connect or log in").build();
+		}
+
+	}
+
+	/**
+	 *
+	 * @param name
+	 * @param authorization
+	 * @return
+	 */
 	private Response delete(final String name, final String authorization) {
 		Response response = null;
 		if (this.connectAndLogin(authorization)) {

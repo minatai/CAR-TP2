@@ -6,6 +6,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import java.util.logging.Logger;
+
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPConnectionClosedException;
 import org.apache.commons.net.ftp.FTPFile;
@@ -210,36 +215,51 @@ public class FTPService {
 	public String listDirectory(final String dir) {
 		
 		try {
-			System.out.println(this.ftpClient.printWorkingDirectory()+ "/"
-					+ dir);
-			String directory = this.ftpClient.printWorkingDirectory()+ "/"
-					+ dir;
+			String directory = this.ftpClient.printWorkingDirectory() + dir;
 			this.ftpClient.changeWorkingDirectory(directory);
-			System.out. println("appel");
-			System.out.println("on commence");
+			System.out.println(directory);
+			
 			FTPFile[] filenames;
-			filenames = this.ftpClient.listFiles(dir);
-			System.out.println("affichage de fichier");
+			filenames = this.ftpClient.listFiles();
 			System.out.println(filenames.length);
 			for (int i = 0; i < filenames.length; i++) {
-				System.out.println(i);
-
 				System.out.println(filenames[i].getName());
 			}
-<<<<<<< HEAD
-			System.out.println("fin");
-		} catch (IOException e) {
-=======
 		} catch (final IOException e) {
 			System.out
 					.println("Erreur: Impossible d'afficher la liste des fichiers");
->>>>>>> 2ea220bb40d8cb4a01dc4b02398a3e63fddedb4e
 			e.printStackTrace();
 		}
 		
 		return "";
 	}
-
+/** Get the date of file
+ * 
+ * @param
+ * @return
+ */
+	public Response getFile(String filename){
+		Response response = null;
+				
+		try {
+			InputStream is;
+			is = this.ftpClient.retrieveFileStream(filename);
+			if (is == null) {
+				response = Response.status(Response.Status.NOT_FOUND).build();
+				} else {
+				response = Response.ok(is, MediaType.APPLICATION_OCTET_STREAM)
+				.build();
+				}
+				
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response;
+		
+		
+	}
+	
 	/**
 	 * Delete the given file or directory.
 	 *

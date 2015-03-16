@@ -121,59 +121,20 @@ public class FTPRestService {
 	 *            the content of the HTTP header authorization
 	 */
 	@GET
-	@Path("/folder/{name}")
-	public String listDirectory(
+	@Path("/folder/{name: .*}")
+	public Response listDirectory(
 			@PathParam(value = "name") final String dirName,
 			@HeaderParam("Authorization") final String authorization) {
 		if (this.connectAndLogin(authorization)) {
-			// final List<String> listContenu = this.ftpService
-			// .listDirectory(dirName);
-			this.ftpService.listDirectory(dirName);
-			// String liste = "";
-			// System.out.println(liste);
-			//
-			// for (final String s : listContenu) {
-			// liste = liste + s + "\n";
-			// }
-			// return liste;
-			return "";
+		
+			FTPRestService.ftpService.listDirectory(dirName);
+			 return Response.ok().build();
 		} else {
-			return "Impossible to connect or log in";
+			return Response.status(Status.UNAUTHORIZED)
+					.entity("Impossible to connect or log in").build();
 		}
 
 	}
-
-	/**
-<<<<<<< HEAD
-	 * @throws IOException 
-=======
-	 * Delete a file/directory
->>>>>>> 2ea220bb40d8cb4a01dc4b02398a3e63fddedb4e
-	 *
-	 * @param name
-	 *            the name of the file/directory
-	 * @param authorization
-	 *            the content of the HTPP header authorization
-	 * @return a Response to send.
-	 */
-<<<<<<< HEAD
-	@GET
-	@Path("/folder/{name}")
-	public String listDirectory(@PathParam(value = "name") final String dirName) throws IOException {
-		System.out.println("*********************************************\n"
-				+ dirName + "*********************************************\n");
-		if (this.connectAndLogin()) {
-			//final List<String> listContenu = 
-					this.ftpService
-					.listDirectory(dirName);
-			String liste = "";
-			System.out.println(liste);
-
-			//for (final String s : listContenu) {
-				//liste = liste + s + "\n";
-			//}
-			return liste;
-=======
 	private Response delete(final String name, final String authorization) {
 		Response response = null;
 		if (this.connectAndLogin(authorization)) {
@@ -186,7 +147,6 @@ public class FTPRestService {
 						.entity("Impossible to delete the given directory/file")
 						.build();
 			}
->>>>>>> 2ea220bb40d8cb4a01dc4b02398a3e63fddedb4e
 		} else {
 			response = Response.status(Status.FORBIDDEN)
 					.entity("Impossible to delete the given directory/file")

@@ -1,7 +1,6 @@
 package restFTP.restService;
 
 import java.io.InputStream;
-import java.util.List;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -12,6 +11,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.util.Base64;
 
 import restFTP.service.FTPService;
@@ -127,12 +127,13 @@ public class FTPRestService {
 			@HeaderParam("Authorization") final String authorization) {
 		if (this.connectAndLogin(authorization)) {
 
-			final List<String> res = FTPRestService.ftpService
+			final FTPFile[] res = FTPRestService.ftpService
 					.listDirectory(dirName);
 			String listing = "";
-			for (final String file : res) {
-				listing += file + "\n";
+			for (int i = 0; i < res.length; i++) {
+				listing += res[i].getRawListing() + "<br />";
 			}
+
 			return Response.ok().entity(listing).build();
 		} else {
 			return Response.status(Status.UNAUTHORIZED)

@@ -202,22 +202,20 @@ public class FTPService {
 	 * @throws FTPConnectionClosedException
 	 */
 	public Response listDirectory(final String dir) {
-		
+		Response response = null;
 		try {
 			
 			FTPFile[] filenames;
 			filenames = this.ftpClient.listFiles();
-			System.out.println(filenames.length);
-			for (int i = 0; i < filenames.length; i++) {
-				System.out.println(filenames[i].getName());
-			}
+			String test=null;
+			response= Response.ok(test, MediaType.TEXT_HTML).build();
+		
 		} catch (final IOException e) {
-			System.out
-					.println("Erreur: Impossible d'afficher la liste des fichiers");
+			response= Response.status(Response.Status.BAD_REQUEST).build();
 			e.printStackTrace();
 		}
 		
-		return null;
+		return response;
 	}
 
 	/** Get the containent of file
@@ -250,6 +248,13 @@ public class FTPService {
 		
 		
 	}
+	
+	public Response putFile(String fileName){
+		return null;
+		
+		
+	}
+	
 	
 	/**
 	 * Delete the given file or directory.

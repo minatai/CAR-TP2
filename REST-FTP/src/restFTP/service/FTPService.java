@@ -120,8 +120,8 @@ public class FTPService {
 			this.ftpClient.changeWorkingDirectory(pathname);
 		} catch (final IOException e) {
 			System.out
-					.printf("[%s] I/O error occured while setting a new working directory.\n",
-							this.login);
+			.printf("[%s] I/O error occured while setting a new working directory.\n",
+					this.login);
 			e.printStackTrace();
 		}
 		if (result) {
@@ -197,14 +197,16 @@ public class FTPService {
 
 	public FTPFile[] listDirectory(final String dir) {
 		try {
-			return this.ftpClient.listFiles(dir);
+			FTPFile[] res = this.ftpClient.listFiles(dir);
+			this.disconnect();
+			return res;
 		} catch (final IOException e) {
 			System.out
-			.println("Erreur: Impossible d'afficher la liste des fichiers");
+					.println("Erreur: Impossible d'afficher la liste des fichiers");
 			e.printStackTrace();
+			this.disconnect();
 			return null;
 		}
-
 	}
 
 	/**
@@ -267,7 +269,6 @@ public class FTPService {
 				this.disconnect();
 			}
 		} catch (final IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

@@ -125,6 +125,7 @@ public class FTPRestService {
 	public Response listDirectory(
 			@PathParam(value = "name") final String dirName,
 			@HeaderParam("Authorization") final String authorization) {
+		
 		if (this.connectAndLogin(authorization)) {
 
 			final FTPFile[] res = FTPRestService.ftpService

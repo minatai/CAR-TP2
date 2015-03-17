@@ -1,11 +1,13 @@
 package restFTP.restService;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
@@ -226,4 +228,24 @@ public class FTPRestService {
 		return delete(filename, authorization);
 	}
 
+	@PUT
+	@Path("/file/{file: .+}")
+	public Response putFile(@PathParam(value = "file") final String remote,
+			final InputStream fileInStream,
+			@HeaderParam("Authorization") final String authorization){
+		
+		if (this.connectAndLogin(authorization)) {
+
+			try {
+				return FTPRestService.ftpService.putFile(remote, fileInStream);
+			} catch (IOException e) {
+				return Response.status(Status.UNAUTHORIZED)
+						.entity("Directory inaccessible").build();
+			}
+		} else {
+			return Response.status(Status.UNAUTHORIZED)
+					.entity("Impossible to connect or log in").build();
+		}
+		
+	}
 }

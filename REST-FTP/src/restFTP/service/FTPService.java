@@ -6,6 +6,7 @@ import java.io.InputStream;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPClientConfig;
@@ -245,10 +246,32 @@ public class FTPService {
 	}
 
 	
-	public Response putFile(String fileName){
-		return null;
+	public Response putFile(String remote,InputStream file ) throws IOException{
+		boolean existe = false;
+		String[] dossiers = remote.split("/");
+		int n = dossiers.length;
+		String dir=""; 
+		for(int i=0;i<n-1;i++){
+			dir=dir+dossiers[i]+"/";
+		}
+		FTPFile[] files = listDirectory(dir);
 		
-		
+		for(int i=0; i<files.length;i++){
+			if(dossiers[n-1].equals(files[i].getName())){		
+					existe = true;
+			}
+			
+		}
+		this.ftpClient.changeWorkingDirectory(dir);
+		System.out.println(this.ftpClient.printWorkingDirectory());
+		if(existe){
+			createFile(dossiers[n-1], file);
+			return Response.ok().build();
+		}
+		else{
+			return Response.status(Status.FORBIDDEN)
+					.entity("The file is not exist").build();
+		}
 	}
 
 	/**

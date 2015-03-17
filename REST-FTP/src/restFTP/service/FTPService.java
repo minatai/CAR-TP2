@@ -16,7 +16,7 @@ import org.apache.commons.net.ftp.FTPReply;
 /**
  * This class provide an easy way to handle communications with to FTP Server.
  *
- * @author Arthur Dewarumez
+ * @author Arthur Dewarumez and Imane KHEMICI
  *
  */
 // TODO ajout d'une structure pour stocker un grand nombre de session (HashMap
@@ -201,7 +201,7 @@ public class FTPService {
 	 *         null, if an error occurred.
 	 * @throws FTPConnectionClosedException
 	 */
-
+	
 	public FTPFile[] listDirectory(final String dir) {
 		try {
 			return this.ftpClient.listFiles(dir);
@@ -221,21 +221,18 @@ public class FTPService {
 	 * @return
 	 */
 	public Response getFile(final String filename) {
-		System.out.println("test");
 		Response response = null;
 		if (isADirectory(filename)) {
 			response = Response.status(Response.Status.FORBIDDEN)
 					.entity("Le fichier est un répertoire").build();
 		} else {
 			try {
-				System.out.println("test");
 				InputStream is;
 				is = this.ftpClient.retrieveFileStream(filename);
 				if (is == null) {
 					response = Response.status(Response.Status.NOT_FOUND)
 							.build();
 				} else {
-					System.out.println("test1");
 					response = Response.ok(is,
 							MediaType.APPLICATION_OCTET_STREAM).build();
 				}

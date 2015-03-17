@@ -67,7 +67,7 @@ public class FTPRestService {
 	 *         operation
 	 */
 	@POST
-	@Path("/folder/{name}")
+	@Path("/folder/{name: .+}")
 	public Response createDirectory(
 			@PathParam(value = "name") final String dirName,
 			@HeaderParam("Authorization") final String authorization) {

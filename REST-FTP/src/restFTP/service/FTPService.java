@@ -12,6 +12,7 @@ import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPConnectionClosedException;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
+import org.springframework.stereotype.Service;
 
 /**
  * This class provide an easy way to handle communications with to FTP Server.
@@ -19,8 +20,7 @@ import org.apache.commons.net.ftp.FTPReply;
  * @author Arthur Dewarumez and Imane KHEMICI
  *
  */
-// TODO ajout d'une structure pour stocker un grand nombre de session (HashMap
-// (id/session))
+@Service
 public class FTPService {
 
 	private final String hostName = "localhost";
@@ -29,11 +29,12 @@ public class FTPService {
 	private String login;
 	private static FTPService instance = null;
 
-	public static synchronized FTPService getInstance() {
-		if (FTPService.instance == null) {
-			FTPService.instance = new FTPService();
-		}
-		return FTPService.instance;
+	public FTPService() {
+		this.ftpClient = new FTPClient();
+		final FTPClientConfig ftpConf = new FTPClientConfig(
+				FTPClientConfig.SYST_UNIX);
+		this.ftpClient.configure(ftpConf);
+		this.login = null;
 	}
 
 	/**
@@ -44,14 +45,6 @@ public class FTPService {
 	 */
 	public boolean isADirectory(final String entry) {
 		return new File(entry).isDirectory();
-	}
-
-	private FTPService() {
-		this.ftpClient = new FTPClient();
-		final FTPClientConfig ftpConf = new FTPClientConfig(
-				FTPClientConfig.SYST_UNIX);
-		this.ftpClient.configure(ftpConf);
-		this.login = null;
 	}
 
 	/**
@@ -201,7 +194,7 @@ public class FTPService {
 	 *         null, if an error occurred.
 	 * @throws FTPConnectionClosedException
 	 */
-	
+
 	public FTPFile[] listDirectory(final String dir) {
 		try {
 			return this.ftpClient.listFiles(dir);
@@ -244,11 +237,9 @@ public class FTPService {
 		return response;
 	}
 
-	
-	public Response putFile(String fileName){
+	public Response putFile(final String fileName) {
 		return null;
-		
-		
+
 	}
 
 	/**
@@ -267,6 +258,17 @@ public class FTPService {
 					filename);
 			e.printStackTrace();
 			return false;
+		}
+	}
+
+	public void disconnect() {
+		try {
+			if (this.ftpClient.logout()) {
+				this.disconnect();
+			}
+		} catch (final IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

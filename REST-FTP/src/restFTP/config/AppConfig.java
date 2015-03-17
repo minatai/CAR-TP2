@@ -9,13 +9,13 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
-import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
 import restFTP.restService.FTPRestService;
 import restFTP.restService.JaxRsApiApplication;
+import restFTP.service.FTPService;
 
 @Configuration
 public class AppConfig {
@@ -36,7 +36,7 @@ public class AppConfig {
 
 		factory.setServiceBeans(serviceBeans);
 		factory.setAddress("/" + factory.getAddress());
-		factory.setProviders(Arrays.<Object> asList(jsonProvider()));
+		factory.setProviders(Arrays.<Object> asList(ftpService()));
 		return factory.create();
 	}
 
@@ -46,7 +46,12 @@ public class AppConfig {
 	}
 
 	@Bean
-	public JacksonJsonProvider jsonProvider() {
-		return new JacksonJsonProvider();
+	public FTPRestService FTPRestService() {
+		return new FTPRestService();
+	}
+
+	@Bean
+	public FTPService ftpService() {
+		return new FTPService();
 	}
 }

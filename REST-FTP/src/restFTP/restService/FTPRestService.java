@@ -121,7 +121,7 @@ public class FTPRestService {
 	 *            the content of the HTTP header authorization
 	 */
 	@GET
-	@Path("/folder/{name: .+}")
+	@Path("/folder/{name: .*}")
 	public Response listDirectory(
 			@PathParam(value = "name") final String dirName,
 			@HeaderParam("Authorization") final String authorization) {

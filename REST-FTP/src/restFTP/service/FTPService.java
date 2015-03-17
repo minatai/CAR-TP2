@@ -202,17 +202,17 @@ public class FTPService {
 	 *         null, if an error occurred.
 	 * @throws FTPConnectionClosedException
 	 */
-	
+
 	public FTPFile[] listDirectory(final String dir) {
 		try {
-			return this.ftpClient.listFiles(dir);
+			final FTPFile[] res = this.ftpClient.listFiles(dir);
+			return res;
 		} catch (final IOException e) {
 			System.out
 			.println("Erreur: Impossible d'afficher la liste des fichiers");
 			e.printStackTrace();
 			return null;
 		}
-
 	}
 
 	/**
@@ -272,7 +272,7 @@ public class FTPService {
 			return Response.status(Status.FORBIDDEN)
 					.entity("The file is not exist").build();
 		}
-	}
+}
 
 	/**
 	 * Delete the given file or directory.

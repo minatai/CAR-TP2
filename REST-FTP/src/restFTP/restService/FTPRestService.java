@@ -127,7 +127,7 @@ public class FTPRestService {
 	public Response listDirectory(
 			@PathParam(value = "name") final String dirName,
 			@HeaderParam("Authorization") final String authorization) {
-		
+
 		if (this.connectAndLogin(authorization)) {
 
 			final FTPFile[] res = FTPRestService.ftpService
@@ -193,39 +193,37 @@ public class FTPRestService {
 	}
 
 	/**
-	 * Delete the given directory.
+	 * Delete the given directory/file.
 	 *
-	 * @param dirName
-	 *            the directory
+	 * @param name
+	 *            the directory/file
 	 * @param authorization
 	 *            the content of the HTTP header authorization
 	 * @return True if the deletion is successful. False, if the directory
 	 *         contains some files or subdirectories, or it does not exists.
 	 */
 	@DELETE
-	@Path("/folder/{folder: .+}")
-	public Response deleteDirectory(
-			@PathParam(value = "folder") final String dirName,
+	@Path("/delete/{folder: .+}")
+	public Response deleteFileOrDirectory(
+			@PathParam(value = "folder") final String name,
 			@HeaderParam("Authorization") final String authorization) {
-		return this.delete(dirName, authorization);
-	}
-
-	/**
-	 * Delete the given file.
-	 *
-	 * @param filename
-	 *            the file
-	 * @param authorization
-	 *            the content of the HTTP header authorization
-	 * @return True if the deletion is successful. False, if the does not
-	 *         exists.
-	 */
-	@DELETE
-	@Path("/file/{file: .+}")
-	public Response deleteFile(
-			@PathParam(value = "file") final String filename,
-			@HeaderParam("Authorization") final String authorization) {
-		return delete(filename, authorization);
+		Response response = null;
+		if (this.connectAndLogin(authorization)) {
+			if (FTPRestService.ftpService.delete(name)) {
+				System.out.printf("Deletion of %s successfull\n", name);
+				response = Response.ok().build();
+			} else {
+				response = Response
+						.status(Status.FORBIDDEN)
+						.entity("Impossible to delete the given directory/file")
+						.build();
+			}
+		} else {
+			response = Response.status(Status.UNAUTHORIZED)
+					.entity("You are not authorized to execute this request.")
+					.build();
+		}
+		return response;
 	}
 
 	@PUT

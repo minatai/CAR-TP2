@@ -221,18 +221,21 @@ public class FTPService {
 	 * @return
 	 */
 	public Response getFile(final String filename) {
+		System.out.println("test");
 		Response response = null;
 		if (isADirectory(filename)) {
 			response = Response.status(Response.Status.FORBIDDEN)
 					.entity("Le fichier est un répertoire").build();
 		} else {
 			try {
+				System.out.println("test");
 				InputStream is;
 				is = this.ftpClient.retrieveFileStream(filename);
 				if (is == null) {
 					response = Response.status(Response.Status.NOT_FOUND)
 							.build();
 				} else {
+					System.out.println("test1");
 					response = Response.ok(is,
 							MediaType.APPLICATION_OCTET_STREAM).build();
 				}

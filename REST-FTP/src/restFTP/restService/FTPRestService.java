@@ -2,7 +2,6 @@ package restFTP.restService;
 
 import java.io.InputStream;
 
-import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -29,8 +28,7 @@ public class FTPRestService {
 	/**
 	 * The tools used to connect to the FTP server.
 	 */
-	@Inject
-	private final FTPService ftpService = new FTPService();
+	private static FTPService ftpService = FTPService.getInstance();
 
 	/**
 	 * If necessary, connect to the FTP server and log in with the credentials
@@ -48,9 +46,9 @@ public class FTPRestService {
 		final String decoded = new String(Base64.decodeBase64(base64));
 
 		final String auth[] = decoded.split(":");
-		if (!this.ftpService.isConnected()) {
-			if (this.ftpService.connect()) {
-				return this.ftpService.login(auth[0], auth[1]);
+		if (!FTPRestService.ftpService.isConnected()) {
+			if (FTPRestService.ftpService.connect()) {
+				return FTPRestService.ftpService.login(auth[0], auth[1]);
 			}
 			return false;
 		} else {
@@ -75,7 +73,7 @@ public class FTPRestService {
 			@HeaderParam("Authorization") final String authorization) {
 		System.out.println("Header authorizaion " + authorization);
 		if (this.connectAndLogin(authorization)) {
-			if (this.ftpService.createDirectory(dirName)) {
+			if (FTPRestService.ftpService.createDirectory(dirName)) {
 				return Response.ok().build();
 			}
 			return Response.status(Status.FORBIDDEN)
@@ -106,7 +104,7 @@ public class FTPRestService {
 			final InputStream fileInStream,
 			@HeaderParam("Authorization") final String authorization) {
 		if (this.connectAndLogin(authorization)) {
-			if (this.ftpService.createFile(remote, fileInStream)) {
+			if (FTPRestService.ftpService.createFile(remote, fileInStream)) {
 				return Response.ok().build();
 			} else {
 				return Response.status(Status.FORBIDDEN)
@@ -130,7 +128,8 @@ public class FTPRestService {
 
 		if (this.connectAndLogin(authorization)) {
 
-			final FTPFile[] res = this.ftpService.listDirectory(dirName);
+			final FTPFile[] res = FTPRestService.ftpService
+					.listDirectory(dirName);
 			String listing = "";
 			for (int i = 0; i < res.length; i++) {
 				listing += res[i].getRawListing() + "<br />";
@@ -157,31 +156,24 @@ public class FTPRestService {
 
 		if (this.connectAndLogin(authorization)) {
 
-			return this.ftpService.getFile(fileName);
+			return FTPRestService.ftpService.getFile(fileName);
 		} else {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity("Impossible to connect or log in").build();
 		}
+
 	}
 
 	/**
-	 * Delete the given file or directory.
 	 *
-	 * @param filename
-	 *            the file or the name of the directory
+	 * @param name
 	 * @param authorization
-	 *            the content of the HTTP header authorization
-	 * @return True if the deletion is successful. False, if the does not
-	 *         exists.
+	 * @return
 	 */
-	@DELETE
-	@Path("/delete/{file: .+}")
-	public Response deleteFile(
-			@PathParam(value = "file") final String filename,
-			@HeaderParam("Authorization") final String authorization) {
+	private Response delete(final String name, final String authorization) {
 		Response response = null;
 		if (this.connectAndLogin(authorization)) {
-			if (this.ftpService.delete(filename)) {
+			if (FTPRestService.ftpService.delete(name)) {
 				System.out.println("Deletion successfull");
 				response = Response.ok().build();
 			} else {
@@ -193,6 +185,40 @@ public class FTPRestService {
 		} else {
 			response = Response.status(Status.FORBIDDEN)
 					.entity("Impossible to delete the given directory/file")
+					.build();
+		}
+		return response;
+	}
+
+	/**
+	 * Delete the given directory/file.
+	 *
+	 * @param name
+	 *            the directory/file
+	 * @param authorization
+	 *            the content of the HTTP header authorization
+	 * @return True if the deletion is successful. False, if the directory
+	 *         contains some files or subdirectories, or it does not exists.
+	 */
+	@DELETE
+	@Path("/delete/{folder: .+}")
+	public Response deleteFileOrDirectory(
+			@PathParam(value = "folder") final String name,
+			@HeaderParam("Authorization") final String authorization) {
+		Response response = null;
+		if (this.connectAndLogin(authorization)) {
+			if (FTPRestService.ftpService.delete(name)) {
+				System.out.printf("Deletion of %s successfull\n", name);
+				response = Response.ok().build();
+			} else {
+				response = Response
+						.status(Status.FORBIDDEN)
+						.entity("Impossible to delete the given directory/file")
+						.build();
+			}
+		} else {
+			response = Response.status(Status.UNAUTHORIZED)
+					.entity("You are not authorized to execute this request.")
 					.build();
 		}
 		return response;

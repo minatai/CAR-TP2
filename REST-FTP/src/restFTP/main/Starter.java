@@ -11,10 +11,10 @@ import restFTP.config.AppConfig;
 
 public class Starter {
 
-	public final static String hostname = "localhost";
-	public final static int port = 9999;
-	public final static String userName = "arctarus";
-	public final static String password = "test";
+	public final static String ftp_hostname = "localhost";
+	public final static int ftp_port = 9999;
+	public final static int rest_port = 8080;
+	public final static String rest_hostname = "localhost";
 
 	public static void main(final String[] args) throws Exception {
 		final Server server = new Server(8080);

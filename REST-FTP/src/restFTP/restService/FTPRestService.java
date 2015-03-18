@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.util.Base64;
 
+import restFTP.main.Starter;
 import restFTP.service.FTPService;
 
 /**
@@ -27,10 +28,29 @@ import restFTP.service.FTPService;
 @Path("/ftp")
 public class FTPRestService {
 
+	private final String HEADER_HTML = "<html><head><title>Rest</title></head></body><p>";
+	private final String FOOTER_HTML = "</p></body></html>";
+	private final String LINK = "<a href=\"http://%s@" + Starter.rest_hostname
+			+ ":" + Starter.rest_port + "/rest/api/ftp/%s\">%s</a><br />";
+
 	/**
 	 * The tools used to connect to the FTP server.
 	 */
 	private static FTPService ftpService = FTPService.getInstance();
+
+	/**
+	 * Decode the HTTP header authorization.
+	 *
+	 * @param authorization
+	 *            the content of the header
+	 * @return an array with in the login at index 0 and the password at index
+	 *         1.
+	 */
+	private String[] decodeAuthHeader(final String authorization) {
+		final String base64 = authorization.replace("Basic ", "");
+		final String decoded = new String(Base64.decodeBase64(base64));
+		return decoded.split(":");
+	}
 
 	/**
 	 * If necessary, connect to the FTP server and log in with the credentials
@@ -44,10 +64,8 @@ public class FTPRestService {
 		if (authorization == null) {
 			return false;
 		}
-		final String base64 = authorization.replace("Basic ", "");
-		final String decoded = new String(Base64.decodeBase64(base64));
 
-		final String auth[] = decoded.split(":");
+		final String auth[] = this.decodeAuthHeader(authorization);
 		if (!FTPRestService.ftpService.isConnected()) {
 			if (FTPRestService.ftpService.connect()) {
 				return FTPRestService.ftpService.login(auth[0], auth[1]);
@@ -56,6 +74,39 @@ public class FTPRestService {
 		} else {
 			return true;
 		}
+	}
+
+	/**
+	 * Convert a FTPFile array to an html page
+	 *
+	 * @param files
+	 *            the files
+	 * @param currentDirectory
+	 *            the directory from the files
+	 * @param authorization
+	 *            the authorization headers send to the user
+	 * @return an html page.
+	 */
+	private String ftpFileToHtml(final FTPFile[] files,
+			final String currentDirectory, final String authorization) {
+		String html = this.HEADER_HTML;
+		final String[] loginPassword = this.decodeAuthHeader(authorization);
+		final String auth = loginPassword[0] + ":" + loginPassword[1];
+		for (int i = 0; i < files.length; i++) {
+			final FTPFile currentFile = files[i];
+			String ressource;
+			if (currentFile.isDirectory()) {
+				ressource = "folder/";
+
+			} else { // We do not manage symlink
+				ressource = "file/";
+			}
+			final String name = currentFile.getName();
+			ressource = String.format("%s/%s/%s", ressource, currentDirectory,
+					name);
+			html += String.format(this.LINK, auth, ressource, name);
+		}
+		return html + this.FOOTER_HTML;
 	}
 
 	/**
@@ -82,6 +133,7 @@ public class FTPRestService {
 					.entity("The file is not created.").build();
 		} else {
 			return Response.status(Status.UNAUTHORIZED)
+					.header("WWW-Authenticate", "Basic realm=\"localhost\"")
 					.entity("Impossible to connect or log in").build();
 		}
 	}
@@ -114,6 +166,7 @@ public class FTPRestService {
 			}
 		}
 		return Response.status(Status.UNAUTHORIZED)
+				.header("WWW-Authenticate", "Basic realm=\"localhost\"")
 				.entity("Impossible to connect or log in").build();
 	}
 
@@ -132,14 +185,11 @@ public class FTPRestService {
 
 			final FTPFile[] res = FTPRestService.ftpService
 					.listDirectory(dirName);
-			String listing = "";
-			for (int i = 0; i < res.length; i++) {
-				listing += res[i].getRawListing() + "<br />";
-			}
-
-			return Response.ok().entity(listing).build();
+			final String html = this.ftpFileToHtml(res, dirName, authorization);
+			return Response.ok().entity(html).build();
 		} else {
 			return Response.status(Status.UNAUTHORIZED)
+					.header("WWW-Authenticate", "Basic realm=\"localhost\"")
 					.entity("Impossible to connect or log in").build();
 		}
 
@@ -161,35 +211,10 @@ public class FTPRestService {
 			return FTPRestService.ftpService.getFile(fileName);
 		} else {
 			return Response.status(Status.UNAUTHORIZED)
+					.header("WWW-Authenticate", "Basic realm=\"localhost\"")
 					.entity("Impossible to connect or log in").build();
 		}
 
-	}
-
-	/**
-	 *
-	 * @param name
-	 * @param authorization
-	 * @return
-	 */
-	private Response delete(final String name, final String authorization) {
-		Response response = null;
-		if (this.connectAndLogin(authorization)) {
-			if (FTPRestService.ftpService.delete(name)) {
-				System.out.println("Deletion successfull");
-				response = Response.ok().build();
-			} else {
-				response = Response
-						.status(Status.FORBIDDEN)
-						.entity("Impossible to delete the given directory/file")
-						.build();
-			}
-		} else {
-			response = Response.status(Status.FORBIDDEN)
-					.entity("Impossible to delete the given directory/file")
-					.build();
-		}
-		return response;
 	}
 
 	/**
@@ -220,6 +245,7 @@ public class FTPRestService {
 			}
 		} else {
 			response = Response.status(Status.UNAUTHORIZED)
+					.header("WWW-Authenticate", "Basic realm=\"localhost\"")
 					.entity("You are not authorized to execute this request.")
 					.build();
 		}
@@ -230,20 +256,21 @@ public class FTPRestService {
 	@Path("/file/{file: .+}")
 	public Response putFile(@PathParam(value = "file") final String remote,
 			final InputStream fileInStream,
-			@HeaderParam("Authorization") final String authorization){
-		
+			@HeaderParam("Authorization") final String authorization) {
+
 		if (this.connectAndLogin(authorization)) {
 
 			try {
 				return FTPRestService.ftpService.putFile(remote, fileInStream);
-			} catch (IOException e) {
-				return Response.status(Status.UNAUTHORIZED)
+			} catch (final IOException e) {
+				return Response.status(Status.FORBIDDEN)
 						.entity("Directory inaccessible").build();
 			}
 		} else {
 			return Response.status(Status.UNAUTHORIZED)
+					.header("WWW-Authenticate", "Basic realm=\"localhost\"")
 					.entity("Impossible to connect or log in").build();
 		}
-		
+
 	}
 }

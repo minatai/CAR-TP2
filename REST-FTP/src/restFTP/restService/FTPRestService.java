@@ -167,32 +167,6 @@ public class FTPRestService {
 	}
 
 	/**
-	 *
-	 * @param name
-	 * @param authorization
-	 * @return
-	 */
-	private Response delete(final String name, final String authorization) {
-		Response response = null;
-		if (this.connectAndLogin(authorization)) {
-			if (FTPRestService.ftpService.delete(name)) {
-				System.out.println("Deletion successfull");
-				response = Response.ok().build();
-			} else {
-				response = Response
-						.status(Status.FORBIDDEN)
-						.entity("Impossible to delete the given directory/file")
-						.build();
-			}
-		} else {
-			response = Response.status(Status.FORBIDDEN)
-					.entity("Impossible to delete the given directory/file")
-					.build();
-		}
-		return response;
-	}
-
-	/**
 	 * Delete the given directory/file.
 	 *
 	 * @param name
@@ -230,13 +204,13 @@ public class FTPRestService {
 	@Path("/file/{file: .+}")
 	public Response putFile(@PathParam(value = "file") final String remote,
 			final InputStream fileInStream,
-			@HeaderParam("Authorization") final String authorization){
-		
+			@HeaderParam("Authorization") final String authorization) {
+
 		if (this.connectAndLogin(authorization)) {
 
 			try {
 				return FTPRestService.ftpService.putFile(remote, fileInStream);
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				return Response.status(Status.UNAUTHORIZED)
 						.entity("Directory inaccessible").build();
 			}
@@ -244,6 +218,6 @@ public class FTPRestService {
 			return Response.status(Status.UNAUTHORIZED)
 					.entity("Impossible to connect or log in").build();
 		}
-		
+
 	}
 }

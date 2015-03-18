@@ -133,6 +133,7 @@ public class FTPRestService {
 					.entity("The file is not created.").build();
 		} else {
 			return Response.status(Status.UNAUTHORIZED)
+					.header("WWW-Authenticate", "Basic realm=\"localhost\"")
 					.entity("Impossible to connect or log in").build();
 		}
 	}
@@ -165,6 +166,7 @@ public class FTPRestService {
 			}
 		}
 		return Response.status(Status.UNAUTHORIZED)
+				.header("WWW-Authenticate", "Basic realm=\"localhost\"")
 				.entity("Impossible to connect or log in").build();
 	}
 
@@ -187,6 +189,7 @@ public class FTPRestService {
 			return Response.ok().entity(html).build();
 		} else {
 			return Response.status(Status.UNAUTHORIZED)
+					.header("WWW-Authenticate", "Basic realm=\"localhost\"")
 					.entity("Impossible to connect or log in").build();
 		}
 
@@ -208,6 +211,7 @@ public class FTPRestService {
 			return FTPRestService.ftpService.getFile(fileName);
 		} else {
 			return Response.status(Status.UNAUTHORIZED)
+					.header("WWW-Authenticate", "Basic realm=\"localhost\"")
 					.entity("Impossible to connect or log in").build();
 		}
 
@@ -241,6 +245,7 @@ public class FTPRestService {
 			}
 		} else {
 			response = Response.status(Status.UNAUTHORIZED)
+					.header("WWW-Authenticate", "Basic realm=\"localhost\"")
 					.entity("You are not authorized to execute this request.")
 					.build();
 		}
@@ -258,11 +263,12 @@ public class FTPRestService {
 			try {
 				return FTPRestService.ftpService.putFile(remote, fileInStream);
 			} catch (final IOException e) {
-				return Response.status(Status.UNAUTHORIZED)
+				return Response.status(Status.FORBIDDEN)
 						.entity("Directory inaccessible").build();
 			}
 		} else {
 			return Response.status(Status.UNAUTHORIZED)
+					.header("WWW-Authenticate", "Basic realm=\"localhost\"")
 					.entity("Impossible to connect or log in").build();
 		}
 

@@ -33,8 +33,6 @@ public class FTPRestService {
 	private final String LINK = "<a href=\"http://%s@" + Starter.rest_hostname
 			+ ":" + Starter.rest_port + "/rest/api/ftp/%s\">%s</a><br />";
 
-	private final boolean first_attempt = true;
-
 	/**
 	 * The tools used to connect to the FTP server.
 	 */
@@ -49,9 +47,6 @@ public class FTPRestService {
 	 *         1.
 	 */
 	private String[] decodeAuthHeader(final String authorization) {
-		if (authorization.equals("Basic Og==")) {
-			return null;
-		}
 		final String base64 = authorization.replace("Basic ", "");
 		final String decoded = new String(Base64.decodeBase64(base64));
 		return decoded.split(":");
@@ -69,10 +64,8 @@ public class FTPRestService {
 		if (authorization == null) {
 			return false;
 		}
+
 		final String auth[] = this.decodeAuthHeader(authorization);
-		if (auth == null) {
-			return false;
-		}
 		if (!FTPRestService.ftpService.isConnected()) {
 			if (FTPRestService.ftpService.connect()) {
 				return FTPRestService.ftpService.login(auth[0], auth[1]);
@@ -98,9 +91,6 @@ public class FTPRestService {
 			final String currentDirectory, final String authorization) {
 		String html = this.HEADER_HTML;
 		final String[] loginPassword = this.decodeAuthHeader(authorization);
-		if (loginPassword == null) {
-			return null;
-		}
 		final String auth = loginPassword[0] + ":" + loginPassword[1];
 		for (int i = 0; i < files.length; i++) {
 			final FTPFile currentFile = files[i];
@@ -190,7 +180,9 @@ public class FTPRestService {
 	public Response listDirectory(
 			@PathParam(value = "name") final String dirName,
 			@HeaderParam("Authorization") final String authorization) {
+
 		if (this.connectAndLogin(authorization)) {
+
 			final FTPFile[] res = FTPRestService.ftpService
 					.listDirectory(dirName);
 			final String html = this.ftpFileToHtml(res, dirName, authorization);
@@ -265,7 +257,9 @@ public class FTPRestService {
 	public Response putFile(@PathParam(value = "file") final String remote,
 			final InputStream fileInStream,
 			@HeaderParam("Authorization") final String authorization) {
+
 		if (this.connectAndLogin(authorization)) {
+
 			try {
 				return FTPRestService.ftpService.putFile(remote, fileInStream);
 			} catch (final IOException e) {

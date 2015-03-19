@@ -251,9 +251,10 @@ public class FTPService {
 		String[] dossiers = remote.split("/");
 		int n = dossiers.length;
 		String dir=""; 
-		for(int i=0;i<n-1;i++){
+		for(int i=0;i<n-2;i++){
 			dir=dir+dossiers[i]+"/";
 		}
+		dir = dir+dossiers[n-2];
 		FTPFile[] files = listDirectory(dir);
 		
 		for(int i=0; i<files.length;i++){

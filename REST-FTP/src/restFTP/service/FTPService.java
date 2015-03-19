@@ -204,14 +204,15 @@ public class FTPService {
 	 */
 
 	public FTPFile[] listDirectory(final String dir) {
+		FTPFile[] res = null;
 		try {
-			final FTPFile[] res = this.ftpClient.listFiles(dir);
+			res = this.ftpClient.listFiles(dir);
 			return res;
 		} catch (final IOException e) {
 			System.out
 			.println("Erreur: Impossible d'afficher la liste des fichiers");
 			e.printStackTrace();
-			return null;
+			return res;
 		}
 	}
 
@@ -234,8 +235,8 @@ public class FTPService {
 					response = Response.status(Response.Status.NOT_FOUND)
 							.build();
 				} else {
-					response = Response.ok(is,
-							MediaType.APPLICATION_OCTET_STREAM).build();
+					response =  Response.ok(is, MediaType.APPLICATION_OCTET_STREAM)
+							.build();
 				}
 
 			} catch (final IOException e) {

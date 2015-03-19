@@ -10,6 +10,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -17,6 +19,7 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.util.Base64;
 
 import restFTP.main.Starter;
+import restFTP.model.ItemBuilder;
 import restFTP.service.FTPService;
 
 /**
@@ -74,39 +77,6 @@ public class FTPRestService {
 		} else {
 			return true;
 		}
-	}
-
-	/**
-	 * Convert a FTPFile array to an html page
-	 *
-	 * @param files
-	 *            the files
-	 * @param currentDirectory
-	 *            the directory from the files
-	 * @param authorization
-	 *            the authorization headers send to the user
-	 * @return an html page.
-	 */
-	private String ftpFileToHtml(final FTPFile[] files,
-			final String currentDirectory, final String authorization) {
-		String html = this.HEADER_HTML;
-		final String[] loginPassword = this.decodeAuthHeader(authorization);
-		final String auth = loginPassword[0] + ":" + loginPassword[1];
-		for (int i = 0; i < files.length; i++) {
-			final FTPFile currentFile = files[i];
-			String ressource;
-			if (currentFile.isDirectory()) {
-				ressource = "folder/";
-
-			} else { // We do not manage symlink
-				ressource = "file/";
-			}
-			final String name = currentFile.getName();
-			ressource = String.format("%s/%s/%s", ressource, currentDirectory,
-					name);
-			html += String.format(this.LINK, auth, ressource, name);
-		}
-		return html + this.FOOTER_HTML;
 	}
 
 	/**
@@ -176,17 +146,19 @@ public class FTPRestService {
 	 *            the content of the HTTP header authorization
 	 */
 	@GET
+	@Produces({ MediaType.TEXT_HTML })
 	@Path("/folder/{name: .*}")
 	public Response listDirectory(
 			@PathParam(value = "name") final String dirName,
 			@HeaderParam("Authorization") final String authorization) {
 
 		if (this.connectAndLogin(authorization)) {
-
-			final FTPFile[] res = FTPRestService.ftpService
+			FTPFile[] res = FTPRestService.ftpService
 					.listDirectory(dirName);
-			final String html = this.ftpFileToHtml(res, dirName, authorization);
-			return Response.ok().entity(html).build();
+			ItemBuilder listBuilder = new ItemBuilder();
+			String list = listBuilder.buildList(dirName, res);
+			return Response.ok(list, MediaType.TEXT_HTML).build();
+
 		} else {
 			return Response.status(Status.UNAUTHORIZED)
 					.header("WWW-Authenticate", "Basic realm=\"localhost\"")
@@ -202,6 +174,7 @@ public class FTPRestService {
 	 * @return
 	 */
 	@GET
+	@Produces({ MediaType.APPLICATION_OCTET_STREAM })
 	@Path("/file/{name: .+}")
 	public Response getFile(@PathParam(value = "name") final String fileName,
 			@HeaderParam("Authorization") final String authorization) {

@@ -23,7 +23,7 @@ public class GetTest extends BaseTesting{
 			e.printStackTrace();
 			fail("Une erreur est intervenu durant le test");
 		}
-		//System.out.println(response.getStatusLine().getStatusCode());
+		System.out.println(response.getStatusLine().getStatusCode());
 		assertTrue(response.getStatusLine().getStatusCode() == 200);
 	
 	}
@@ -37,7 +37,7 @@ public class GetTest extends BaseTesting{
 			e.printStackTrace();
 			fail("Une erreur est intervenu durant le test");
 		}
-		//System.out.println(response.getStatusLine().getStatusCode());
+		System.out.println(response.getStatusLine().getStatusCode());
 		assertTrue(response.getStatusLine().getStatusCode() == 404);
 	
 	}
@@ -51,7 +51,8 @@ public class GetTest extends BaseTesting{
 			e.printStackTrace();
 			fail("Une erreur est intervenu durant le test");
 		}
-		//System.out.println(response.getStatusLine().getStatusCode());
+		System.out.println(response.getStatusLine().getStatusCode());
 		assertTrue(response.getStatusLine().getStatusCode() == 200);
 
+	}
 }

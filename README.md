@@ -9,30 +9,26 @@ http://aredko.blogspot.fr/2013/01/going-rest-embedding-jetty-with-spring.html
 Fonctionnement
 --------------
 
--Il faut lancer la class starter dans un terminal.
+1. Il faut lancer la classe starter dans un terminal.
 		
 		java restFTP.main.Starter
 
-Ensuite, il faut lancer le tp serveur dans un autre terminal.
+2. Ensuite, il faut lancer le serveur FTP
 
-		java serveur.Serveur "le dossier que vous voulez prendre comme serveur"
+		java serveur.Serveur {le répetoire du serveur FTP}
 
--Apres avoir lancer ces deux classes, nous avons une interface HTML qui gere les GET : Directories et Files.
+3. Pour manipuler le serveur, il faut utiliser l'url suivante : http://localhost:8080/rest/api/ftp/folder/ si vous souhaiter manipuler des répertoires, http://localhost:8080/rest/api/ftp/file/ si vous souhaiter manipuler des fichiers, http://localhost:8080/rest/api/ftp/file/ si vous souhaiter supprimer des répertoires.
 
--Afin d'y accéder, il faut ouvrir un navigateur et mettre le lien "http://localhost:8080/rest/api/ftp/folder/" dans la barre de recherche.
 
--Une fenetre d'authentification apparait.
+4. Lors de l'utilisation des ces URL, des identifiants peuvent êtres nécéssaire, vous pouvez utiliser ceux ci dessous
 
-	Les identifiants :
+	* User Name : arctarus 
+	* Password : test
+Utilisation
+-----------
+Différents outils sont utilisable pour l'utilisation de l'API : une client REST tels que RESTClient, ou la commande curl.
 
-		User Name : arctarus 
-		Password : test
--Apres la validation des identifiants, vous etes connecté sur le serveur et tout les fichiers existants apparaissent.
-
--À partir de cette interface, vous pouvez consulter tout les dossiers et telecharger les fichiers.
-
--Afin d'( ajouter/supprimer/mettre à jour) un (fichier/ dossier), vous devez utiliser un terminal.
-	Vous lancez un terminal et vous avez qu'à utiliser les commandes suivantes :
+Nous détaillerons ici le fonctionnement de la commande curl
 	
 	POST fichier :
 	--------------
@@ -55,25 +51,23 @@ Ensuite, il faut lancer le tp serveur dans un autre terminal.
 Fonctionnement des tests
 ------------------------
 
-Les tests ont été écrit avec le framework JUnit4
+Les tests ont été écrit avec le framework JUnit4.
 
-Pour lancer les test, il faut d'abord lancer le serveur et starter avec la commande suivante :
-		
-		java restFTP.main.Starter
+Pour lancer les test, il faut d'abord lancer le serveur REST et FTP comme décrit ci dessus.
 
-		java serveur.Serveur "le dossier que vous voulez prendre comme serveur"
-
-Puis lancer les test. Vous pouvez les éxécuter directement à l'aide d'éclipse.
+Les tests doivent êtres lancé directement depuis eclipse
 
 Bugs connus:
 ------------
 
-Apres le telechargement d'un fichier dans l'interface HTML, nous pouvons pas revenir en arriere. Le serveur s'arrete
+* Apres le telechargement d'un fichier dans l'interface HTML, nous pouvons pas revenir en arriere. Le serveur s'arrête.
+* L'exécution de la classe DeleteTEST bloque lors de l'exécution de la première méthode de test.
 
 Travail non fait:
 -----------------
 
  En maniere generale, le tp à été implementé completement à part quelques bugs signalés dans la partie Bugs connus.
 
- L'implementation des tests unitaires n'est pas complete.
+ L'implementation des tests unitaires n'est pas complete. Par exemple, le service FTP aurait put bénéficier de test.
+
 	

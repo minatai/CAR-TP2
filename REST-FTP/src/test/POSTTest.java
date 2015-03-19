@@ -37,10 +37,9 @@ public class POSTTest extends BaseTesting {
 					this.CORRECT_PASSWORD);
 		} catch (final IOException e) {
 			e.printStackTrace();
-			fail("Une erreur est intervenu durant le test");
+			fail(this.ERROR_DURING_TEST);
 		}
-		System.out.println(response.getStatusLine().getStatusCode());
-		assertTrue(response.getStatusLine().getStatusCode() == 200);
+		assertTrue(response.getStatusLine().getStatusCode() == this.OK);
 	}
 
 	/**
@@ -54,9 +53,9 @@ public class POSTTest extends BaseTesting {
 					this.CORRECT_PASSWORD);
 		} catch (final IOException e) {
 			e.printStackTrace();
-			fail("Une erreur est intervenu durant le test");
+			fail(this.ERROR_DURING_TEST);
 		}
-		assertTrue(response.getStatusLine().getStatusCode() == 403);
+		assertTrue(response.getStatusLine().getStatusCode() == this.FORBIDDEN);
 	}
 
 	/**
@@ -70,10 +69,11 @@ public class POSTTest extends BaseTesting {
 					this.INCORRECT_PASSWORD);
 		} catch (final IOException e) {
 			e.printStackTrace();
-			fail("Une erreur est intervenu durant le test");
+			fail(this.ERROR_DURING_TEST);
 		}
 		// Je ne comprends pas pourquoi le test ne passe pas.
-		// assertTrue(response.getStatusLine().getStatusCode() == 401);
+		// assertTrue(response.getStatusLine().getStatusCode() ==
+		// this.UNAUTHORIZED);
 	}
 
 	/**
@@ -87,9 +87,9 @@ public class POSTTest extends BaseTesting {
 					this.CORRECT_PASSWORD);
 		} catch (final IOException e) {
 			e.printStackTrace();
-			fail("Une erreur est intervenu durant le test");
+			fail(this.ERROR_DURING_TEST);
 		}
-		assertTrue(response.getStatusLine().getStatusCode() == 200);
+		assertTrue(response.getStatusLine().getStatusCode() == this.OK);
 	}
 
 	/**
@@ -103,9 +103,10 @@ public class POSTTest extends BaseTesting {
 					this.INCORRECT_PASSWORD);
 		} catch (final IOException e) {
 			e.printStackTrace();
-			fail("Une erreur est intervenu durant le test");
+			fail(this.ERROR_DURING_TEST);
 		}
 		// Je ne comprends pas pourquoi le test ne passe pas.
-		// assertTrue(response.getStatusLine().getStatusCode() == 401);
+		// assertTrue(response.getStatusLine().getStatusCode() ==
+		// this.UNAUTHORIZED);
 	}
 }

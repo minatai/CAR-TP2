@@ -18,7 +18,6 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.util.Base64;
 
-import restFTP.main.Starter;
 import restFTP.model.ItemBuilder;
 import restFTP.service.FTPService;
 
@@ -30,11 +29,6 @@ import restFTP.service.FTPService;
  */
 @Path("/ftp")
 public class FTPRestService {
-
-	private final String HEADER_HTML = "<html><head><title>Rest</title></head></body><p>";
-	private final String FOOTER_HTML = "</p></body></html>";
-	private final String LINK = "<a href=\"http://%s@" + Starter.rest_hostname
-			+ ":" + Starter.rest_port + "/rest/api/ftp/%s\">%s</a><br />";
 
 	/**
 	 * The tools used to connect to the FTP server.
@@ -94,7 +88,6 @@ public class FTPRestService {
 	public Response createDirectory(
 			@PathParam(value = "name") final String dirName,
 			@HeaderParam("Authorization") final String authorization) {
-		System.out.println("Header authorizaion " + authorization);
 		if (this.connectAndLogin(authorization)) {
 			if (FTPRestService.ftpService.createDirectory(dirName)) {
 				return Response.ok().build();
@@ -153,10 +146,10 @@ public class FTPRestService {
 			@HeaderParam("Authorization") final String authorization) {
 
 		if (this.connectAndLogin(authorization)) {
-			FTPFile[] res = FTPRestService.ftpService
+			final FTPFile[] res = FTPRestService.ftpService
 					.listDirectory(dirName);
-			ItemBuilder listBuilder = new ItemBuilder();
-			String list = listBuilder.buildList(dirName, res);
+			final ItemBuilder listBuilder = new ItemBuilder();
+			final String list = listBuilder.buildList(dirName, res);
 			return Response.ok(list, MediaType.TEXT_HTML).build();
 
 		} else {

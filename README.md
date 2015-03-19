@@ -69,4 +69,10 @@ Bugs connus:
 ------------
 
 	-Apres le telechargement d'un fichier dans l'interface HTML, nous pouvons pas revenir en arriere. Le serveur s'arrete.
+
+Travail non fait:
+-----------------
+
+ En maniere generale, le tp à été implementé completement à part quelques bugs signalés dans la partie Bugs connus.
+ L'implementation des tests unitaires n'est pas complete.
 	

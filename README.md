@@ -18,13 +18,17 @@ Ensuite, il faut lancer le tp serveur dans un autre terminal.
 		java serveur.Serveur "le dossier que vous voulez prendre comme serveur"
 
 -Apres avoir lancer ces deux classes, nous avons une interface HTML qui gere les GET : Directories et Files.
+
 -Afin d'y accéder, il faut ouvrir un navigateur et mettre le lien "http://localhost:8080/rest/api/ftp/folder/" dans la barre de recherche.
+
 -Une fenetre d'authentification apparait.
+
 	Les identifiants :
 
 		User Name : arctarus 
 		Password : test
 -Apres la validation des identifiants, vous etes connecté sur le serveur et tout les fichiers existants apparaissent.
+
 -À partir de cette interface, vous pouvez consulter tout les dossiers et telecharger les fichiers.
 
 -Afin d'( ajouter/supprimer/mettre à jour) un (fichier/ dossier), vous devez utiliser un terminal.

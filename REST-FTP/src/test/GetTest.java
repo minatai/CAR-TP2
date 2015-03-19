@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class GetTest {
+public class GetTest extends BaseTesting{
 
 	@Test
 	public void test() {

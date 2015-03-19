@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class DeleteTest {
+public class DeleteTest extends BaseTesting{
 
 	@Test
 	public void test() {

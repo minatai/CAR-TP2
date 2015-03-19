@@ -4,11 +4,14 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class PutTest {
+public class PutTest extends BaseTesting{
 
 	@Test
 	public void test() {
-		fail("Not yet implemented");
+		
+		
+		
+		
 	}
 
 }

@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 
 import org.apache.commons.net.ftp.FTPFile;
 
+import restFTP.service.FTPService;
+
 public class ItemBuilder {
 	
 
@@ -38,12 +40,10 @@ public class ItemBuilder {
 	}
 
 	private String buildItem(String canonicalPath, FTPFile file) {
-	
+		String lien = "http://localhost:8080/rest/api/ftp/file/";
 		String itemPath = file.getName();
-		String lien = "http://localhost:8080/rest/api/ftp/file";
-
+		
 		if (file.isDirectory()) {
-			lien = lien + "/"+ file.getName();
 			itemPath += "/";
 			}
 		final StringBuilder builder = new StringBuilder();
@@ -56,7 +56,7 @@ public class ItemBuilder {
 		}
 		else{
 			builder.append("<img src=\"/static/" + icon + "\" alt=\"[TXT]\">");
-			builder.append(" <a href="+ lien + "/" +itemPath + ">" + file.getName()
+			builder.append(" <a href="+ lien+canonicalPath +itemPath+ ">" + file.getName()
 				+ "</a> ");
 		}
 

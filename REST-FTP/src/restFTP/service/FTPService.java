@@ -26,7 +26,7 @@ public class FTPService {
 
 	private final String hostName = "localhost";
 	private final int port = 9999;
-	private final FTPClient ftpClient;
+	public final FTPClient ftpClient;
 	private String login;
 	private static FTPService instance = null;
 
@@ -248,6 +248,7 @@ public class FTPService {
 
 	
 	public Response putFile(String remote,InputStream file ) throws IOException{
+		String env = this.ftpClient.printWorkingDirectory();
 		boolean existe = false;
 		String[] dossiers = remote.split("/");
 		int n = dossiers.length;
@@ -265,9 +266,9 @@ public class FTPService {
 			
 		}
 		this.ftpClient.changeWorkingDirectory(dir);
-		System.out.println(this.ftpClient.printWorkingDirectory());
 		if(existe){
 			createFile(dossiers[n-1], file);
+			this.ftpClient.changeWorkingDirectory(env);
 			return Response.ok().build();
 		}
 		else{

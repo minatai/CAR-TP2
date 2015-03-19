@@ -6,6 +6,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
 
@@ -65,6 +66,20 @@ public abstract class BaseTesting {
 			final String password) throws ClientProtocolException, IOException {
 		final HttpPost request = new HttpPost(this.completeURL
 				+ this.fileRessource + filename);
+		request.addHeader(this.HEADER_AUTHORIZATION,
+				this.createAuthorizationField(login, password));
+		return this.client.execute(request);
+	}
+	
+	public HttpResponse getFile(final String filename, String login, String password) throws ClientProtocolException, IOException{
+		final HttpGet request = new HttpGet(this.completeURL+fileRessource+filename );
+		request.addHeader(this.HEADER_AUTHORIZATION,
+				this.createAuthorizationField(login, password));
+		return this.client.execute(request);
+	}
+	
+	public HttpResponse getDirectory(final String dirname, String login, String password) throws ClientProtocolException, IOException{
+		final HttpGet request = new HttpGet(this.completeURL+folderRessource+dirname );
 		request.addHeader(this.HEADER_AUTHORIZATION,
 				this.createAuthorizationField(login, password));
 		return this.client.execute(request);

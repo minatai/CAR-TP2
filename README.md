@@ -68,7 +68,7 @@ Puis lancer les test. Vous pouvez les éxécuter directement à l'aide d'éclips
 Bugs connus:
 ------------
 
-	-Apres le telechargement d'un fichier dans l'interface HTML, nous pouvons pas revenir en arriere. Le serveur s'arrete.
+Apres le telechargement d'un fichier dans l'interface HTML, nous pouvons pas revenir en arriere. Le serveur s'arrete
 
 Travail non fait:
 -----------------

@@ -60,7 +60,8 @@ Les tests doivent êtres lancé directement depuis eclipse
 Bugs connus:
 ------------
 
-Apres le telechargement d'un fichier dans l'interface HTML, nous pouvons pas revenir en arriere. Le serveur s'arrête.
+* Apres le telechargement d'un fichier dans l'interface HTML, nous pouvons pas revenir en arriere. Le serveur s'arrête.
+* L'exécution de la classe DeleteTEST bloque lors de l'exécution de la première méthode de test.
 
 Travail non fait:
 -----------------
